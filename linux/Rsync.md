@@ -67,7 +67,8 @@ rsync -ravh ~/hardlink/hulk dodo@192.168.0.113:/backup
 
 ```bash
 
-rsync -ravbh dodo@192.168.0.113:/home/dodo/backup  /home/user/storage
+rsync -ravbh remote-user-name@192.168.0.113:/home/remote-user/file-name  /home/local-user/file-path
+
 
 ```
 
