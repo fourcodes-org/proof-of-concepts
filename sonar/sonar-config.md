@@ -48,10 +48,39 @@ vm.max_map_count=524288
 fs.file-max=131072
 ```
 
+- To run the sysctl command below to apply new changes on the '/etc/sysctl.conf' file.
 
+```cmd
+sudo sysctl --system
+```
+**To set up ulimit for the SonarQube**
 
+_ulimit configuration_
 
+```cmd
+sudo nano /etc/security/limits.d/99-sonarqube.conf
+```
 
+`Add`
+
+```cmd
+sonarqube   -   nofile   131072
+sonarqube   -   nproc    8192
+```
+
+**SonarQube Package installation**
+
+```cmd
+sudo apt install unzip software-properties-common wget 
+wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-9.6.1.59531.zip
+unzip sonarqube-9.6.1.59531.zip
+```
+```cmd
+mv sonarqube-9.6.1.59531 /opt/sonarqube
+sudo chown -R sonarqube:sonarqube /opt/sonarqube
+```
+
+**_Configuring SonarQube_**
 
 
 
