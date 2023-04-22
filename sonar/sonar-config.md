@@ -61,7 +61,7 @@ _ulimit configuration_
 sudo nano /etc/security/limits.d/99-sonarqube.conf
 ```
 
-`Add`
+Add the following configuration
 
 ```cmd
 sonarqube   -   nofile   131072
@@ -81,6 +81,96 @@ sudo chown -R sonarqube:sonarqube /opt/sonarqube
 ```
 
 **_Configuring SonarQube_**
+
+* Go to /opt/sonarqube/conf and make backup of original sonar.properties using `mv` command
+
+```cmd
+sudo mv /opt/sonarqube/conf/sonar.properties /opt/sonarqube/conf/sonar.properties.backup
+```
+_create conf file_
+
+```cmd
+sudo vim /opt/sonarqube/conf/sonar.properties
+```
+
+Add the following configuration 
+
+```cnf
+sonar.jdbc.username=sonarqube
+sonar.jdbc.password=Password
+
+sonar.search.javaOpts=-Xmx512m -Xms512m -XX:MaxDirectMemorySize=256m -XX:+HeapDumpOnOutOfMemoryError
+
+sonar.web.host=192.168.1.100
+sonar.web.port=9000
+sonar.web.javaAdditionalOpts=-server
+
+sonar.log.level=INFO
+sonar.path.logs=logs
+
+```
+* Save the file and exit
+
+**_create a new systemd service_**
+
+```cmd
+sudo vim /etc/systemd/system/sonarqube.service
+```
+
+Add the following configuration
+
+```cnf
+[Unit]
+Description=SonarQube service
+After=syslog.target network.target
+
+[Service]
+Type=forking
+ExecStart=/opt/sonarqube/bin/linux-x86-64/sonar.sh start
+ExecStop=/opt/sonarqube/bin/linux-x86-64/sonar.sh stop
+User=sonarqube
+Group=sonarqube
+Restart=always
+LimitNOFILE=65536
+LimitNPROC=4096
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Reload the systemd manager
+
+```cmd
+sudo systemctl daemon-reload
+```
+Now start the sonarqube.service
+
+```cmd
+sudo systemctl start sonarqube.service
+sudo systemctl enable sonarqube.service
+```
+
+```cmd
+sudo systemctl status sonarqube.service
+```
+
+_Host entry to .._
+
+```cmd
+sudo vim /etc/hosts
+```
+```bash
+cat <<EOF >> /etc/hosts
+192.168.1.10 node1
+192.168.1.11 node2
+EOF
+```
+_Now chech browser_
+
+http://192.168.1.100:9000
+
+
+
 
 
 
