@@ -161,13 +161,151 @@ sudo vim /etc/hosts
 ```
 ```bash
 cat <<EOF >> /etc/hosts
-192.168.1.10 node1
-192.168.1.11 node2
+192.168.1.100
 EOF
 ```
 _Now chech browser_
 
 http://192.168.1.100:9000
+
+
+
+**Running SonarQube with Reverse Proxy**
+
+_Install Nginx web server_
+
+```cmd
+sudo apt install nginx
+```
+_start the service_
+
+```cmd
+sudo systemctl is-enabled nginx
+sudo systemctl status nginx
+```
+
+_Create a new server blocks configuration_
+
+```cmd
+sudo nano /etc/nginx/sites-available/sonarqube.conf
+
+
+```cnf
+server {
+
+    listen 80;
+    server_name sonarqube.in;
+    access_log /var/log/nginx/sonar.access.log;
+    error_log /var/log/nginx/sonar.error.log;
+    proxy_buffers 16 64k;
+    proxy_buffer_size 128k;
+
+    location / {
+        proxy_pass http://192.168.1.100:9000;
+        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+        proxy_redirect off;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto http;
+    }
+}
+
+```
+
+* Activate the server block configuration 'sonarqube.conf' by creating a symlink of that file to the '/etc/nginx/sites-enabled' directory
+
+```cmd
+sudo ln -s /etc/nginx/sites-available/sonarqube.conf /etc/nginx/sites-enabled/
+sudo nginx -t
+```
+
+_restart the nginx service_
+
+```cmd
+sudo systemctl restart nginx
+```
+
+_Host entry to .._
+
+```cmd
+sudo vim /etc/hosts
+```
+```bash
+cat <<EOF >> /etc/hosts
+192.168.1.100 sonarqube.in
+EOF
+```
+_Now chech browser_
+
+http://sonarqube.in/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
