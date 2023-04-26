@@ -68,4 +68,13 @@ sudo usermod -aG docker $USER
 #reboot the system
 ```
 
-docker document reference pls visit --> https://docs.docker.com/reference/
+_docker compose installation_
+
+```bash
+curl -SL https://github.com/docker/compose/releases/download/v2.17.2/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
+sudo chmod +x docker-compose 
+sudo mv docker-compose /usr/local/bin/
+
+```
+
+
