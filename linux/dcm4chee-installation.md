@@ -86,3 +86,49 @@ docker-compose up -d
   user | changeit | user |
 
 
+
+```bash
+docker network create dcm4chee_network
+
+mkdir -p ~/.local/dcm4chee-arc/ldap/ \
+    ~/.local/dcm4chee-arc/slapd.d/ \
+    ~/.local/dcm4chee-arc/db/ \
+    ~/.local/dcm4chee-arc/wildfly/
+
+readlink /etc/localtime | sed 's#/var/db/timezone/zoneinfo/##'
+
+echo $(readlink /etc/localtime | sed 's#/var/db/timezone/zoneinfo/##') > ~/.local/dcm4chee-arc/timezone
+
+cat ~/.local/dcm4chee-arc/timezone
+
+docker run --network=dcm4chee_network --name ldap \
+    -p 389:389 -v ~/.local/dcm4chee-arc/ldap:/var/lib/openldap/openldap-data \
+    -v ~/.local/dcm4chee-arc/slapd.d:/etc/openldap/slapd.d  \
+    -d dcm4che/slapd-dcm4chee:2.6.3-30.0
+
+docker run --network=dcm4chee_network --name db  -p 5432:5432 -e POSTGRES_DB=pacsdb -e POSTGRES_USER=pacs  -e POSTGRES_PASSWORD=pacs -v /etc/localtime:/etc/localtime:ro  -v ~/.local/dcm4chee-arc/timezone:/etc/timezone:ro  -v ~/.local/dcm4chee-arc/db:/var/lib/postgresql/data  -d dcm4che/postgres-dcm4chee:14.7-30
+
+
+
+docker run --network=dcm4chee_network --name arc \
+    -p 8080:8080 -p 8443:8443 -p 9990:9990 -p 9993:9993 \
+    -p 11112:11112 -p 2762:2762  -p 2575:2575  -p 12575:12575  \
+    -e POSTGRES_DB=pacsdb -e POSTGRES_USER=pacs -e POSTGRES_PASSWORD=pacs \
+    -e WILDFLY_WAIT_FOR="ldap:389 db:5432" -v /etc/localtime:/etc/localtime:ro  \
+    -v ~/.local/dcm4chee-arc/timezone:/etc/timezone:ro \
+    -v ~/.local/dcm4chee-arc/wildfly:/opt/wildfly/standalone \
+    -d dcm4che/dcm4chee-arc-psql:5.30.0
+
+docker run --rm --network=dcm4chee_network dcm4che/dcm4che-tools storescu \
+    -cDCM4CHEE@arc:11112 /opt/dcm4che/etc/testdata/dicom
+
+tail -f ~/.local/dcm4chee-arc/wildfly/log/server.log
+
+http://localhost:8080/dcm4chee-arc/ui2
+https://localhost:8443/dcm4chee-arc/ui2
+
+https://medium.com/up-running/running-dcm4chee-on-macos-31b99ef1dfa6
+https://github.com/dcm4che/dcm4chee-arc-light/wiki/Run-minimum-set-of-archive-services-on-a-single-host
+https://github.com/dcm4che/dcm4chee-arc-light/wiki/Installation
+
+```
