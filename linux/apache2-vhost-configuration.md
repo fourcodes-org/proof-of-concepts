@@ -209,7 +209,7 @@ copy and past the below configuration in this file
    
         # APACHE2 LOGS
         ErrorLog  ${APACHE_LOG_DIR}/dodo-found.tk.error.log
-        CustomLog ${APACHE_LOG_DIR}/dodo-found.tk.access.log combined
+        CustomLog ${APACHE_LOG_DIR}/dodo-found.tk.access.log cododo-found.tkmbined
         
 </VirtualHost>
 ```
