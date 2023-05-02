@@ -201,6 +201,12 @@ copy and past the below configuration in this file
         SSLCertificateKeyFile    /etc/apache2/ssl/private.key
         SSLCertificateChainFile  /etc/apache2/ssl/ca_bundle.crt
         
+        Protocols h2 http/1.1
+
+        <If "%{HTTP_HOST} == 'www.example.com'">
+              Redirect permanent / https://example.com/
+        </If>
+   
         # APACHE2 LOGS
         ErrorLog  ${APACHE_LOG_DIR}/dodo-found.tk.error.log
         CustomLog ${APACHE_LOG_DIR}/dodo-found.tk.access.log combined
