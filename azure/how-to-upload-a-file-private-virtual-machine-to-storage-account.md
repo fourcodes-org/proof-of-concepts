@@ -47,7 +47,7 @@ Open the command prompt and navigate to a particular location. This location sho
 **command**
 
 ```bash
-curl -H "x-ms-blob-type: BlockBlob" --upload-file demo.zip --url "https://sdcmigration1.blob.core.windows.net/dmeo/demo.zip?sp=racwdl&st=2023-05-04T03:30:34Z&se=2023-05-04T11:30:34Z&spr=https&sv=2022-11-02&sr=c&sig=RQ0pM9d4zuAKuhSoYcDb8yE6rvij9yHkFDLdfgbvjIg%3D"
+curl -H "x-ms-blob-type: BlockBlob" --upload-file demo.zip --url "https://xxxx.blob.core.windows.net/dmeo/demo.zip?sp=racwdl&st=2023-05-04T03:30:34Z&se=2023-05-04T11:30:34Z&spr=https&sv=2022-11-02&sr=c&sig=RQ0pM9d4zuAKuhSoYcDb8yE6rvij9yHkFDLdfgbvjIg%3D"
 ```
 
 **Note** Include the file name in your URL.
