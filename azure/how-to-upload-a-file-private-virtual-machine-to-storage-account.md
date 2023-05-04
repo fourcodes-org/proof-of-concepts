@@ -56,6 +56,7 @@ Execution done, go to the azure storage account and navigate to the networking t
 
 ![image](https://user-images.githubusercontent.com/57703276/236110033-e71ab2af-ec06-4f57-95d1-b6aba0581465.png)
 
+_navigate to storage account container_
 
 ![image](https://user-images.githubusercontent.com/57703276/236110077-b32cda69-bf2f-4e63-a127-f04d92e9820c.png)
 
