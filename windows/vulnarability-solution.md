@@ -1,100 +1,95 @@
+_enable check padding solution_
 
 ```powershell
-$registryPath = "HKLM:\Software\Microsoft\Cryptography\Wintrust\Conf"
-$Name = "EnableCertPaddingCheck"
-$value = "1"
-
-IF(!(Test-Path $registryPath)) {
-    New-Item -Path $registryPath -Force | Out-Null
-    New-ItemProperty -Path $registryPath -Name $name -Value $value -PropertyType String -Force | Out-Null
-}
-ELSE {
-    New-ItemProperty -Path $registryPath -Name $name -Value $value -PropertyType String -Force | Out-Null
-}
-
-
-$registryPath = "HKLM:\Software\Wow6432Node\Microsoft\Cryptography\Wintrust\Conf"
-$Name = "EnableCertPaddingCheck"
-$value = "1"
-IF(!(Test-Path $registryPath)) {
-    New-Item -Path $registryPath -Force | Out-Null
-    New-ItemProperty -Path $registryPath -Name $name -Value $value -PropertyType String -Force | Out-Null
-}
-ELSE {
-    New-ItemProperty -Path $registryPath -Name $name -Value $value -PropertyType String -Force | Out-Null
-}
+reg add "HKEY_LOCAL_MACHINE\Software\Microsoft\Cryptography\Wintrust\Config" /f /v EnableCertPaddingCheck /t Reg_DWORD /d 1
+reg add "HKEY_LOCAL_MACHINE\Software\Wow6432Node\Microsoft\Cryptography\Wintrust\Config" /f /v EnableCertPaddingCheck /t Reg_DWORD /d 1
 
 ```
 
+_Windows Speculative Execution Configuration Check_
 
 ```powershell
-param (
-  [switch]$FixIt
-)
+reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /f /v FeatureSettingsOverride /t REG_DWORD /d 72
+reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /f /v FeatureSettingsOverrideMask /t REG_DWORD /d 3
+```
 
-# Quick and dirty script by Rakhesh to fix unquoted path vulnerabilities in service paths
-# This code is licensed under the MIT license - https://opensource.org/licenses/MIT
-# https://isc.sans.edu/diary/Help+eliminate+unquoted+path+vulnerabilities/14464 for more info on the vulnerability itself - good read!
+_TLS Disable_
 
-Get-Content .\ServerNames.txt | %{ 
-  # Preliminary stuff for registry access
-  $Type_SZ = [Microsoft.Win32.RegistryValueKind]::String
-  $Hive = [Microsoft.Win32.RegistryHive]::LocalMachine
-  $KeyPath = "SYSTEM\CurrentControlSet\services"
+```powershell
+# Enable TLS v1.0
 
-  $ComputerName = $_;
-  # hat tip to http://stackoverflow.com/a/19015125 for this newer way of creating a custom object
-  $ResultObj = [pscustomobject]@{
-    ComputerName = $ComputerName
-    Status = "Online"
-    SubKey = $null
-    Original = $null
-    Replacement = $null
-  }
+reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server" /f /v DisabledByDefault /t Reg_DWORD /d 0
+reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server" /f /v Enabled /t Reg_DWORD /d 4294967295
 
-  if (Test-Connection -ComputerName $ComputerName -Quiet -Count 2) { 
-    # Clear the variable that will hold the registry connection
-    $Reg = $null; 
+# Disable TLS 1.0
 
-    # Open remote registry and if it fails then set the status accordingly
-    try { $Reg = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey($Hive, $ComputerName) } catch { $ResultObj.Status = "Error"; $ResultObj }
-    
-    if ($Reg) {
-      # Open the services key
-      $Key = $Reg.OpenSubKey($KeyPath, $true)
+reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server" /f /v DisabledByDefault /t Reg_DWORD /d 1
+reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server" /f /v Enabled /t Reg_DWORD /d 0
 
-      # Enumerate subkeys; and for each subkey do ...
-      foreach ($SubkeyName in $Key.GetSubKeyNames()) {
-        # Open the subkey read-only (else we get errors on some keys which we don't have write access to)
-        $Subkey = $Key.OpenSubKey($SubkeyName, $false)
-    
-        # Get value of ImagePath
-        $Value = $Subkey.GetValue("ImagePath")
+# Enable TLS 2.0
 
-        # Match ImagePath to see if it has an exe; if yes, extract the exe path. Note: extract only exe path, not arguments. 
-        # If this extracted path doesn't start in quotes and when we split it for spaces we get more than one result, then enclose path in double quotes.
-        if ($Value -match ".*\.exe" ) { 
-          if (($Matches[0] -notlike '"*') -and (($Matches[0] -split '\s').Count -gt 1)) { 
-            $Replacement = '"' + $Matches[0] + '"'
-            $NewValue = $Value -replace ".*\.exe",$Replacement
+reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server" /f /v DisabledByDefault /t Reg_DWORD /d 0
+reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server" /f /v Enabled /t Reg_DWORD /d 4294967295
+```
 
-            $ResultObj.SubKey = Split-Path -Leaf $SubKey;
-            $ResultObj.Original = $Value;
-            $ResultObj.Replacement = $NewValue;
-        
-            $ResultObj
-          
-            if ($FixIt) {
-              # re-open the key with read-write permissions 
-              $Subkey = $Key.OpenSubKey($SubkeyName, $true)
-              $Subkey.SetValue("ImagePath","$Replacement");
-              if ($?) { Write-Host -ForegroundColor Green "Success!" } else { Write-Host -ForegroundColor Red "Something went wrong!" }
+_Microsoft Windows Unquoted Service Path Enumeration_
+
+```powershell
+$BaseKeys = "HKLM:\System\CurrentControlSet\Services"
+
+#Blacklist for keys to ignore
+$BlackList = $Null
+#Create an ArrayList to store results in
+$Values = New-Object System.Collections.ArrayList
+#Discovers all registry keys under the base keys
+$DiscKeys = Get-ChildItem -Recurse -Directory $BaseKeys -Exclude $BlackList -ErrorAction SilentlyContinue |
+            Select-Object -ExpandProperty Name | %{($_.ToString().Split('\') | Select-Object -Skip 1) -join '\'}
+#Open the local registry
+$Registry = [Microsoft.Win32.RegistryKey]::OpenBaseKey('LocalMachine', 'Default')
+ForEach ($RegKey in $DiscKeys)
+{
+    #Open each key with write permissions
+    Try { $ParentKey = $Registry.OpenSubKey($RegKey, $True) }
+    Catch { Write-Debug "Unable to open $RegKey" }
+    #Test if registry key has values
+    If ($ParentKey.ValueCount -gt 0)
+    {
+        $MatchedValues = $ParentKey.GetValueNames() | ?{ $_ -eq "ImagePath" -or $_ -eq "UninstallString" }
+        ForEach ($Match in $MatchedValues)
+        {
+            #RegEx that matches values containing .exe with a space in the exe path and no double quote encapsulation
+            $ValueRegEx = '(^(?!\u0022).*\s.*\.[Ee][Xx][Ee](?<!\u0022))(.*$)'
+            $Value = $ParentKey.GetValue($Match)
+            #Test if value matches RegEx
+            If ($Value -match $ValueRegEx)
+            {
+                $RegType = $ParentKey.GetValueKind($Match)
+                If ($RegType -eq "ExpandString")
+                {
+                    #RegEx to generate an unexpanded string to use for correcting
+                    $ValueRegEx = '(^(?!\u0022).*\.[Ee][Xx][Ee](?<!\u0022))(.*$)'
+                    #Get the value without expanding the environmental names
+                    $Value = $ParentKey.GetValue($Match, $Null, [Microsoft.Win32.RegistryValueOptions]::DoNotExpandEnvironmentNames)
+                    $Value -match $ValueRegEx
+                }
+                #Uses the matches from the RegEx to build a new entry encapsulating the exe path with double quotes
+                $Correction = "$([char]34)$($Matches[1])$([char]34)$($Matches[2])"
+                #Attempt to correct the entry
+                Try { $ParentKey.SetValue("$Match", "$Correction", [Microsoft.Win32.RegistryValueKind]::$RegType) }
+                Catch { Write-Debug "Unable to write to $ParentKey" }
+                #Add a hashtable containing details of corrected key to ArrayList
+                $Values.Add((New-Object PSObject -Property @{
+                "Name" = $Match
+                "Type" = $RegType
+                "Value" = $Value
+                "Correction" = $Correction
+                "ParentKey" = "HKEY_LOCAL_MACHINE\$RegKey"
+                })) | Out-Null
             }
-          } 
-          Clear-Variable Matches
         }
-      }
     }
-  } else { $ResultObj.Status = "Online"; $ResultObj }
+    $ParentKey.Close()
 }
+$Registry.Close()
+$Values | Select-Object ParentKey,Value,Correction,Name,Type
 ```
