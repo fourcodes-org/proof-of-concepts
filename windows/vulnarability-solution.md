@@ -1,4 +1,4 @@
-_enable check padding solution_
+_The remote Windows host is potentially missing a mitigation for a remote code execution vulnerability_
 
 ```powershell
 reg add "HKEY_LOCAL_MACHINE\Software\Microsoft\Cryptography\Wintrust\Config" /f /v EnableCertPaddingCheck /t Reg_DWORD /d 1
