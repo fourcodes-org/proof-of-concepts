@@ -1,0 +1,8 @@
+---
+image: node
+pipelines:
+  default:
+    - step:
+        script:
+          - npm install -g newman
+          - newman run main.json
