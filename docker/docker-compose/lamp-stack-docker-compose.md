@@ -8,21 +8,21 @@ services:
 
 
  php-apache-environment:
-container_name: php-apache
+container_name: web-server
 image: php:7.4-apache
 volumes:
   - ./php/src:/var/www/html/
 ports:
-  - 8080:80
+  - 8081:80
   db:
 image: mysql
 command: --default-authentication-plugin=mysql_native_password
-container_name: mysql
+container_name: mysql-database
 environment:
   MYSQL_ROOT_PASSWORD: admin
-  MYSQL_DATABASE: ezapi
-  MYSQL_USER: root
-  MYSQL_PASSWORD: password
+  MYSQL_DATABASE: demo
+  MYSQL_USER: sqladmin
+  MYSQL_PASSWORD: password@123
 ports:
   - "6033:3306"
 volumes:
@@ -40,7 +40,7 @@ environment:
   PMA_ARBITRARY: 1
 restart: always
 ports:
-  - 8081:80
+  - 8082:80
 volumes:
 
 
