@@ -1,5 +1,13 @@
 _aws-api-gateway-lambda-dynamodb.md_
 
+_Creation of dynamodb_
+
+1. Create the dynamodb in the name of `api-data`
+2. make sure Partition key name is `name`
+3. the create it.
+ 
+![image](https://github.com/januo-org/proof-of-concepts/assets/57703276/825ac196-0a18-4529-a1f0-4fe7d3458bd1)
+
 
 _lambda code_
 
@@ -68,3 +76,16 @@ def create_records(name, id, dob):
         
     } 
 ```
+
+_Create the IAM role_
+
+1. lambda role
+2. api gateway role
+
+
+_Create the api gateway_
+
+
+will share the apigateway open api json file
+
+
