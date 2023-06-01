@@ -89,3 +89,15 @@ _Create the api gateway_
 will share the apigateway open api json file
 
 
+
+
+_test request post body_
+
+```json
+{
+    "name": "janu",
+    "id": "1",
+    "dob": "12/12/12"
+}
+
+```
