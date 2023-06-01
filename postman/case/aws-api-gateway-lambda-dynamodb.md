@@ -82,14 +82,15 @@ _Create the IAM role_
 1. lambda role
 2. api gateway role
 
+Those roles need to be attached to appropriate resources.
+
 
 _Create the api gateway_
 
-
-will share the apigateway open api json file
-
-
-
+```json
+   {
+   }
+```
 
 _test request post body_
 
