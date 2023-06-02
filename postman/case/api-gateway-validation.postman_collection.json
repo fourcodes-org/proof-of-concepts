@@ -1,0 +1,74 @@
+{
+	"info": {
+		"_postman_id": "99cceca9-e595-49af-982a-3170284caee2",
+		"name": "api-gateway-validation",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET METHOD",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://{{API_URL}}/api/userinfo",
+					"protocol": "https",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"api",
+						"userinfo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST METHOD",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"eano\",\r\n    \"id\": \"1\",\r\n    \"dob\": \"12/12/12\"\r\n}"
+				},
+				"url": {
+					"raw": "https://{{API_URL}}/api/userinfo",
+					"protocol": "https",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"api",
+						"userinfo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST METHOD BAD REQUEST",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"janu\",\r\n    \"id\": \"1\"\r\n}"
+				},
+				"url": {
+					"raw": "https://{{API_URL}}/api/userinfo",
+					"protocol": "https",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"api",
+						"userinfo"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
