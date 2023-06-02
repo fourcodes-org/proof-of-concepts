@@ -5,4 +5,4 @@ pipelines:
     - step:
         script:
           - npm install -g newman
-          - newman run main.json -e dev-env.json
+          - newman run main.json
