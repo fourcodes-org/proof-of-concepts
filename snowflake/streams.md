@@ -1,3 +1,4 @@
+```sql
 --create a staging table to simulate data arriving from outside Snowflake and being processed further through a stream object. 
 CREATE DATABASE stream_demo;
 USE DATABASE stream_demo;
@@ -54,3 +55,5 @@ UPDATE customer_staging SET name = 'John Smith' WHERE ID = 1;
  
 --Select the data from the stream to see how an UPDATE appears in a stream
 SELECT * FROM customer_changes;
+
+```
