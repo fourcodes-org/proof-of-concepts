@@ -1,3 +1,4 @@
+'''sql
 USE ROLE ACCOUNTADMIN;
 -- create first database which will contain the data to be shared
 CREATE DATABASE C7_R3;
