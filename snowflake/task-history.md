@@ -1,3 +1,4 @@
+```sql
 --use the task_history table function which can be used to query the history of task execution. Th
 SELECT * FROM TABLE(information_schema.task_history()) 
 ORDER BY SCHEDULED_TIME;
@@ -32,3 +33,5 @@ TABLE(information_schema.task_history(
        result_limit => 2
 )) 
 ORDER BY SCHEDULED_TIME;
+
+```
