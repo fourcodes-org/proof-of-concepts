@@ -50,7 +50,7 @@ In the navigation pane, choose `Data`. Choose `Database`. you may see your datab
 ![image](https://github.com/januo-org/proof-of-concepts/assets/57703276/9c8bf151-c972-4152-888c-7fc506615c7f)
 
 
-_create the secondry admin_
+_create the secondry admin  use_
 
 ```sql
 USE ROLE SECURITYADMIN;
@@ -62,3 +62,8 @@ MUST_CHANGE_PASSWORD = TRUE;
 
 GRANT ROLE "ACCOUNTADMIN" TO USER SECONDARY_ACCOUNT_ADMIN;
 ```
+
+
+_view existing roles_
+
+![image](https://github.com/januo-org/proof-of-concepts/assets/57703276/0bcb8b7e-0128-4a8b-b021-f873c46a0ff7)
