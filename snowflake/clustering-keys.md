@@ -3,8 +3,7 @@
 CREATE DATABASE C6_R6;
 
 -- create table that will hold the transaction data:
-CREATE TABLE TRANSACTIONS
-(
+CREATE TABLE TRANSACTIONS (
   TXN_ID STRING,
   TXN_DATE DATE,
   CUSTOMER_ID STRING,
