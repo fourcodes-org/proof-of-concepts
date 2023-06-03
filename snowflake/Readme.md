@@ -110,3 +110,34 @@ MUST_CHANGE_PASSWORD = TRUE;
 GRANT ROLE "ACCOUNTADMIN" TO USER SECONDARY_ACCOUNT_ADMIN;
 ```
 
+
+_manage database_
+
+```sql
+# use the system admin role
+USE ROLE SYSADMIN;
+
+# create the development database
+CREATE DATABASE development_database COMMENT = 'This is development database';
+
+# Show databases
+SHOW DATABASES LIKE 'development_database';
+
+# create the production database
+CREATE DATABASE production_database DATA_RETENTION_TIME_IN_DAYS = 15 COMMENT = 'This is critical production database';
+
+# Show databases
+SHOW DATABASES LIKE 'production_database';
+
+# create the temporary database
+CREATE TRANSIENT DATABASE temporary_database  DATA_RETENTION_TIME_IN_DAYS = 0 COMMENT = 'Temporary database for ETL processing';
+
+# Show databases
+SHOW DATABASES LIKE 'temporary_database';
+
+# If you want to change the temporary database data retention you may execute the command
+ALTER DATABASE temporary_database SET DATA_RETENTION_TIME_IN_DAYS = 1;
+
+# Show databases
+SHOW DATABASES LIKE 'temporary_database';
+```
