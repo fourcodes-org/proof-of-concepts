@@ -1,3 +1,4 @@
+```sql
 --create a database and a staging table on which we will create our stream object. We will be creating a staging table to simulate data arriving from outside Snowflake and being processed further through a stream object. 
 CREATE DATABASE stream_demo;
 USE DATABASE stream_demo;
@@ -77,4 +78,4 @@ ORDER BY SCHEDULED_TIME DESC;
 
 --select the data from the target table to validate that the rows in the staging table have been inserted into the target table. 
 SELECT * FROM customer;
- 
+ ```
