@@ -1,7 +1,7 @@
 _snowflake docs_
 
 
-_DEFAULT ROLES_
+_default roles_
 
 ```conf
 1.ACCOUNTADMIN
@@ -13,6 +13,9 @@ _DEFAULT ROLES_
 ```
 
 _create the warehouse_
+
+A virtual warehouse, often referred to simply as a “warehouse”, is a cluster of compute resources in Snowflake. Virtual warehouses are required when performing select or other operations requiring compute resources.
+
 
 A SQL worksheet should be made to carry out the SQL statement to create the SQL `WAREHOUSE`.
 
