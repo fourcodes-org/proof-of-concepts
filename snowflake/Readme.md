@@ -144,3 +144,25 @@ SHOW DATABASES LIKE 'temporary_database';
 -- # LIST ALL THE DATABASES
 SHOW DATABASES;
 ```
+_manage SQL schema_
+
+```sql
+-- # create the databse
+CREATE DATABASE testing_schema_creation;
+
+-- # to view schemas from existing database
+SHOW SCHEMAS IN DATABASE testing_schema_creation;
+
+-- # create the new schema
+CREATE SCHEMA a_custom_schema COMMENT = 'A new custom schema';
+
+-- # show the schema
+SHOW SCHEMAS LIKE 'a_custom_schema' IN DATABASE testing_schema_creation;
+
+
+CREATE TRANSIENT SCHEMA temporary_data DATA_RETENTION_TIME_IN_DAYS = 0 COMMENT = 'Schema containing temporary data used by ETL processes';
+
+-- # show thw schema specific schema name
+SHOW SCHEMAS LIKE 'temporary_data' IN DATABASE testing_schema_creation ;
+
+```
