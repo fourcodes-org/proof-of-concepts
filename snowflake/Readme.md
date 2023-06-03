@@ -140,4 +140,7 @@ ALTER DATABASE temporary_database SET DATA_RETENTION_TIME_IN_DAYS = 1;
 
 -- # Show databases
 SHOW DATABASES LIKE 'temporary_database';
+
+-- # LIST ALL THE DATABASES
+SHOW DATABASES;
 ```
