@@ -208,29 +208,16 @@ CREATE OR REPLACE TABLE customers (
 );
 
 -- load sample data
-COPY INTO customers
-FROM s3://snowflake-cookbook/ch2/r3/customer.csv
+COPY INTO customers FROM s3://snowflake-cookbook/ch2/r3/customer.csv
 FILE_FORMAT = (TYPE = csv SKIP_HEADER = 1 FIELD_OPTIONALLY_ENCLOSED_BY = '"');
 
-
 -- replace table selecting all data from the customer table
-CREATE OR REPLACE TABLE 
-	customers_deep_copy 
-AS 
-SELECT * 
-	FROM customers;
-
+CREATE OR REPLACE TABLE customers_deep_copy AS SELECT *	FROM customers;
 
 -- replace table selecting without data
-CREATE OR REPLACE TABLE 
-customers_shallow_copy 
-LIKE customers;
+CREATE OR REPLACE TABLE customers_shallow_copy LIKE customers;
 
-
-SELECT 
-COUNT(*) shallow_count 
-FROM 
-customers_shallow_copy;
+SELECT COUNT(*) shallow_count FROM  customers_shallow_copy;
 
 -- create a temporary table
 CREATE TEMPORARY TABLE customers_temp AS SELECT * FROM customers WHERE TRY_TO_NUMBER(postal_code) IS NOT NULL;
