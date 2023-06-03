@@ -1,3 +1,4 @@
+```sql
 --We will be using a fictitious query on the sample data
 SELECT C.C_NAME,SUM(L_EXTENDEDPRICE),SUM(L_TAX) 
 
@@ -74,3 +75,4 @@ WHERE name IN ('CLEAR_ORDERING_CUSTOMERS','RELOAD_ORDERING_CUSTOMERS');
  
 --validate that the tasks have indeed executed successfully by selecting from the ordering_customers table:
 SELECT * FROM ordering_customers;
+```
