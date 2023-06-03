@@ -12,13 +12,9 @@ _DEFAULT ROLES_
 6.USERADMIN
 ```
 
-
 _create the warehouse_
 
 A SQL worksheet should be made to carry out the SQL statement to create the SQL `WAREHOUSE`.
-
-
-
 
 ```sql
 USE ROLE SYSADMIN;
@@ -32,4 +28,19 @@ AUTO_SUSPEND = 300 -- suspend after 5 minutes (300 seconds) of inactivity
 AUTO_RESUME = TRUE
 INITIALLY_SUSPENDED = TRUE
 COMMENT = 'Virtual Warehouse for ETL workloads. Auto scales between 1 and 3 clusters depending on the workload';
+```
+
+_Create the database in the name of `COOKBOOK`_
+
+```sql
+CREATE DATABASE COOKBOOK;
+
+USE DATABASE COOKBOOK;
+CREATE TABLE MY_FIRST_TABLE
+(
+    ID STRING,
+    NAME STRING
+);
+
+SELECT * FROM MY_FIRST_TABLE;
 ```
