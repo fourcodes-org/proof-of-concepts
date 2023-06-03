@@ -47,3 +47,5 @@ SELECT * FROM MY_FIRST_TABLE;
 
 In the navigation pane, choose `Data`. Choose `Database`. you may see your database name `COOKBOOK`
 
+![image](https://github.com/januo-org/proof-of-concepts/assets/57703276/9c8bf151-c972-4152-888c-7fc506615c7f)
+
