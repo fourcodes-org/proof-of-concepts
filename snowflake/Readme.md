@@ -44,3 +44,6 @@ CREATE TABLE MY_FIRST_TABLE
 
 SELECT * FROM MY_FIRST_TABLE;
 ```
+
+In the navigation pane, choose `Data`. Choose `Database`. you may see your database name `COOKBOOK`
+
