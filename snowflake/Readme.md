@@ -52,7 +52,7 @@ The cloud services layer is a collection of services that coordinate activities 
 _view existing roles_
 
 ```sql
-SOW ROLES;
+SHOW ROLES;
 ```
 ![image](https://github.com/januo-org/proof-of-concepts/assets/57703276/0bcb8b7e-0128-4a8b-b021-f873c46a0ff7)
 
