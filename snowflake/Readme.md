@@ -11,3 +11,25 @@ _DEFAULT ROLES_
 5.SYSADMIN
 6.USERADMIN
 ```
+
+
+_create the warehouse_
+
+A SQL worksheet should be made to carry out the SQL statement to create the SQL `WAREHOUSE`.
+
+
+
+
+```sql
+USE ROLE SYSADMIN;
+
+CREATE WAREHOUSE ETL_WH
+WAREHOUSE_SIZE = XSMALL
+MAX_CLUSTER_COUNT = 3
+MIN_CLUSTER_COUNT = 1
+SCALING_POLICY = ECONOMY
+AUTO_SUSPEND = 300 -- suspend after 5 minutes (300 seconds) of inactivity
+AUTO_RESUME = TRUE
+INITIALLY_SUSPENDED = TRUE
+COMMENT = 'Virtual Warehouse for ETL workloads. Auto scales between 1 and 3 clusters depending on the workload';
+```
