@@ -49,6 +49,13 @@ The cloud services layer is a collection of services that coordinate activities 
 6.USERADMIN
 ```
 
+_view existing roles_
+
+```sql
+SOW ROLES;
+```
+![image](https://github.com/januo-org/proof-of-concepts/assets/57703276/0bcb8b7e-0128-4a8b-b021-f873c46a0ff7)
+
 **_create the warehouse_**
 
 A virtual warehouse, often referred to simply as a “warehouse”, is a cluster of compute resources in Snowflake. Virtual warehouses are required when performing select or other operations requiring compute resources.
@@ -103,7 +110,3 @@ MUST_CHANGE_PASSWORD = TRUE;
 GRANT ROLE "ACCOUNTADMIN" TO USER SECONDARY_ACCOUNT_ADMIN;
 ```
 
-
-_view existing roles_
-
-![image](https://github.com/januo-org/proof-of-concepts/assets/57703276/0bcb8b7e-0128-4a8b-b021-f873c46a0ff7)
