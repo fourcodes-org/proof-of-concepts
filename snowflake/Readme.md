@@ -286,3 +286,6 @@ GROUP BY L_COMMITDATE;
 -- select from materialized view which is much faster
 SELECT * FROM test_view_creation.public.date_wise_orders_fast;
 ```
+
+
+https://docs.snowflake.com/en/sql-reference/sql/create-database-role
