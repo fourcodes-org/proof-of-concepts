@@ -14,6 +14,10 @@ AUTO_SUSPEND = 300 -- suspend after 5 minutes (300 seconds) of inactivity
 AUTO_RESUME = TRUE
 INITIALLY_SUSPENDED = TRUE
 COMMENT = 'Virtual Warehouse for ETL workloads. Auto scales between 1 and 3 clusters deps on the workload';
+
+SHOW WAREHOUSES;
+
+USE WAREHOUSE ETL_WH;
 ```
 
 _manage db schema and tables_
