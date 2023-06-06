@@ -6,12 +6,13 @@ CREATE DATABASE IF NOT EXISTS gino;
 
 USE DATABASE gino;
 
-
 CREATE schema if not exists users;
 
 -- # switch to schema
-use schema users;
+USE schema users;
+USE gino.users;
 
+-- # create the new table
 CREATE TABLE if not exists users.customers (
   id              INT NOT NULL,
   last_name       VARCHAR(100) ,
