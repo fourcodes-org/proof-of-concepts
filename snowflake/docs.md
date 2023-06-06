@@ -9,6 +9,8 @@ USE DATABASE gino;
 
 CREATE schema if not exists users;
 
+-- # switch to schema
+use schema users;
 
 CREATE TABLE if not exists users.customers (
   id              INT NOT NULL,
@@ -31,6 +33,12 @@ CREATE SCHEMA ADD_USERS CLONE USERS;
 -- # list the all schemas under the db
 SHOW SCHEMAS;
 
+-- # switch to schema
+use schema ADD_USERS;
+
 -- # clone the existing db
 CREATE DATABASE add_gino CLONE gino;
+
+-- clone the existing table 
+CREATE TABLE add_customers CLONE customers;
 ```
