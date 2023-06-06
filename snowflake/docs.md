@@ -27,4 +27,10 @@ CREATE TABLE if not exists users.customers (
 
 -- # clone the existing schemas
 CREATE SCHEMA ADD_USERS CLONE USERS;
+
+-- # list the all schemas under the db
+SHOW SCHEMAS;
+
+-- # clone the existing db
+CREATE DATABASE add_gino CLONE gino;
 ```
