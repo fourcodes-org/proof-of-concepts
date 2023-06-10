@@ -8,7 +8,7 @@ _three-layer-squid-configuration.md_
 |squid-proxy-2|172.25.5.149|172.25.5.144/29 |
 |squid-proxy-3|172.24.131.149|172.24.131.144/29 |
 
-Traffic from the app instance is routed through squid-proxy-1, which is routed through squid-proxy-2, which is routed through squid-proxy-3.
+Traffic from the `app instance` is routed through `squid-proxy-1`, which is routed through `squid-proxy-2`, which is routed through `squid-proxy-3`.
 
 _squid-proxy-1 configuration_
 
