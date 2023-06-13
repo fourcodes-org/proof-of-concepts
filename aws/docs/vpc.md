@@ -85,8 +85,8 @@ Inside the private instance, how can we give a internet connection:
   - Attach the NAT gateway to an private RT route.
   - We have to login the public instance through SSH.
   - Inside the public instance we have to login the private instance through SSH.
-  - After logging in, we check whether the internet process is working or not. While working, we need to put in some commands. In case it is not working, we need to check the creation     of the Nat Gateway.
-    `sudo apt install  vim`
+  - After logging in, we check whether the internet process is working or not. While working, we need to put in some commands. In case it is not working, we need to check the creation       of the Nat Gateway.
+    `sudo apt install vim`
 ```
 ![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/8642ee67-e506-4014-8b89-21f583916d40)
 
