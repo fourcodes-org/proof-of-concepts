@@ -56,7 +56,43 @@ Note:
 `subnet association for private subnet`
 ![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/e9b025d9-64b0-4af0-bade-9d791c38c916)
 
+**EC2 Instance with Security Group:**
+---
 
+`create the public instance name - one`
+![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/fb6de43d-1409-4a55-8110-93cc90caf613)
+
+`create the private instance name - two`
+![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/5a2f9b91-5170-4f53-aeb9-2648930efca5)
+
+**Check the output connectivity:**
+---
+
+```sh
+  - login to the public instance
+  - check the network connectivity to that instance using this command `ping google.com`
+  - Then login to the private instace from the public instance.
+```
+`output`
+![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/4eb16292-1643-4f89-8517-d6520972839f)
+
+**NAT Gateway:**
+---
+Inside the private instance, how can we give a internet connection:
+
+```sh
+  - create the NAT gateway to public subnet.
+  - Attach the NAT gateway to an private RT route.
+  - We have to login the public instance through SSH.
+  - Inside the public instance we have to login the private instance through SSH.
+  - After logging in, we check whether the internet process is working or not. While working, we need to put in some commands. In case it is not working, we need to check the creation     of the Nat Gateway.
+    `sudo apt install  vim`
+```
+![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/8642ee67-e506-4014-8b89-21f583916d40)
+
+![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/da075ee7-4522-4956-9a5a-6d1d35219a13)
+
+![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/ffc6774e-cef7-4d6a-8e73-a7affd627436)
 
 
 
