@@ -116,7 +116,7 @@ _multiple rule access_
             "Resource": "arn:aws:execute-api:ap-south-1:ACCOUNT:APIID/dev/GET/demo"
         },
         {
-            "Sid": "VisualEditor0",
+            "Sid": "VisualEditor2",
             "Effect": "Allow",
             "Action": "execute-api:Invoke",
             "Resource": "arn:aws:execute-api:ap-south-1:ACCOUNT:APIID/STAGENAME/METHOD/PATH"
