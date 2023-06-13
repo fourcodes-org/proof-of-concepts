@@ -44,7 +44,8 @@ Note:
 ![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/e0a3e6e2-e554-4f05-8b16-6f94e04b25fb)
 
 ```sh
-- create the public-rt using the above manner
+Note:
+  - create the public-rt using the above manner
 ```
 `route to the IGW in public-rt`
 ![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/fb757a74-f006-4dcd-bf4f-ab14906abd07)
