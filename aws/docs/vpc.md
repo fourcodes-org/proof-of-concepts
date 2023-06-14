@@ -94,6 +94,10 @@ Inside the private instance, how can we give a internet connection:
 
 ![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/ffc6774e-cef7-4d6a-8e73-a7affd627436)
 
+Note: 
+  - Please refer this url for NAT gateway process - https://cloudiofy.com/how-to-connect-ec2-instance-in-a-private-subnet/
+
+
 
 Using ICMP, we need to give the network connection for private instance
 
