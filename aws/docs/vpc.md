@@ -95,4 +95,10 @@ Inside the private instance, how can we give a internet connection:
 ![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/ffc6774e-cef7-4d6a-8e73-a7affd627436)
 
 
+Using ICMP, we need to give the network connection for private instance
+
+![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/940f11b7-1af9-490d-b4df-07ca12b0d0d6)
+
+![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/af798d96-75e5-458a-ace9-b2b9f0f915ea)
+
 
