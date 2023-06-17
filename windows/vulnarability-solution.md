@@ -158,3 +158,44 @@ reg add 'HKU\S-1-5-21-3441312238-2935593948-1070341977-1005\SOFTWARE\Policies\Mi
 reg add 'HKU\S-1-5-21-3441312238-2935593948-1070341977-1005\SOFTWARE\Policies\Microsoft\Windows\Control Panel\Desktop'  /f /v 'ScreenSaveActive'   /t Reg_DWORD /d 1
 
 ```
+
+_common user configuration_
+
+```ps1
+# 18.9.47.6.1 Ensure 'Enable file hash computation feature' is set to 'Enabled'
+reg add "HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows Defender\MpEngine" /f /v EnableFileHashComputation /t REG_DWORD /d 1
+# 18.9.47.9.4 Ensure 'Turn on script scanning' is set to 'Enabled'
+reg add "HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" /f /v DisableScriptScanning /t REG_DWORD /d 1
+# 18.9.64.1 Ensure 'Turn off Push To Install service' is set to 'Enabled'
+reg add "HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\PushToInstall" /f /v DisablePushToInstall /t REG_DWORD /d 1
+# 18.9.17.7 Ensure 'Limit Dump Collection' is set to 'Enabled'
+reg add "HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\DataCollection" /f /v LimitDumpCollection /t REG_DWORD /d 1
+# 18.9.17.6 Ensure 'Limit Diagnostic Log Collection' is set to 'Enabled'
+reg add "HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\DataCollection" /f /v LimitDiagnosticLogCollection /t REG_DWORD /d 1
+# 18.9.17.3 Ensure 'Disable OneSettings Downloads' is set to 'Enabled'
+reg add "HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\DataCollection" /f /v EnableOneSettingsAuditing /t REG_DWORD /d 1
+# 18.9.17.3 Ensure 'Disable OneSettings Downloads' is set to 'Enabled'
+reg add "HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\DataCollection" /f /v DisableOneSettingsDownloads /t REG_DWORD /d 1
+# 18.9.14.1 Ensure 'Turn off cloud consumer account state content' is set to 'Enabled'
+reg add "HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\CloudContent" /f /v DisableConsumerAccountStateContent /t REG_DWORD /d 1
+# spooler enable process
+reg add 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Spooler' /f /v 'Start'   /t Reg_DWORD /d 4
+
+# 18.5.4.1 Ensure 'Configure DNS over HTTPS (DoH) name resolution' is set to 'Enabled: Allow DoH' or higher
+reg add "HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows NT\DNSClient" /f /v DoHPolicy /t REG_DWORD /d 2
+# "18.6.2 Ensure 'Point and Print Restrictions: When installing drivers for a new connection' is set to 'Enabled: Show warning and elevation prompt'" : [FAILED]
+reg add 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows NT\Printers\PointAndPrint' /f /v 'NoWarningNoElevationOnInstall'   /t Reg_DWORD /d 0
+
+# "18.6.3 Ensure 'Point and Print Restrictions: When updating drivers for an existing connection' is set to 'Enabled: Show warning and elevation prompt'" : [FAILED]
+reg add 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows NT\Printers\PointAndPrint' /f /v 'UpdatePromptSettings'   /t Reg_DWORD /d 0
+
+#  18.3.6 (L1) Ensure 'NetBT NodeType configuration' is set to 'Enabled: P-node (recommended)'
+reg add 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\NetBT\Parameters'  /f /v 'NodeType'   /t Reg_DWORD /d 2
+
+# Disable IPv6
+reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\tcpip6\parameters" /v DisabledComponents /t REG_DWORD /d 0xFF /f
+# 18.6.1 Ensure 'Allow Print Spooler to accept client connections' is set to 'Disabled'
+reg add "HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows NT\Printers" /f /v RegisterSpoolerRemoteRpcEndPoint /t REG_DWORD /d 2
+# 18.6.2 Ensure 'Point and Print Restrictions: When installing drivers for a new connection' is set to 'Enabled: Show warning and elevation prompt'
+
+```
