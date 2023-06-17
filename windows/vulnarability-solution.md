@@ -105,3 +105,56 @@ ForEach ($RegKey in $DiscKeys)
 $Registry.Close()
 $Values | Select-Object ParentKey,Value,Correction,Name,Type
 ```
+
+_new user add securoty configuration_
+
+```ps1
+# Ensure 'Always install with elevated privileges
+reg add  "HKU\S-1-5-21-3441312238-2935593948-1070341977-1005\SOFTWARE\Policies\Microsoft\Windows\Installer" /f /v "AlwaysInstallElevated" /t Reg_DWORD /d 0  
+
+#  "19.7.28.1 Ensure 'Prevent users from sharing files within their profile.' is set to 'Enabled'" : [FAILED]
+reg add 'HKU\S-1-5-21-3441312238-2935593948-1070341977-1005\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer'  /f /v 'NoInplaceSharing'   /t Reg_DWORD /d 1
+
+# "19.7.8.5 Ensure 'Turn off Spotlight collection on Desktop' is set to 'Enabled'"
+reg add 'HKU\S-1-5-21-3441312238-2935593948-1070341977-1005\Software\Policies\Microsoft\Windows\CloudContent' /f /v 'DisableSpotlightCollectionOnDesktop'   /t Reg_DWORD /d 1
+
+# 19.7.7.2 (L1) Ensure 'Do not suggest third-party content in Windows spotlight' is set to 'Enabled'
+reg add 'HKU\S-1-5-21-3441312238-2935593948-1070341977-1005\Software\Policies\Microsoft\Windows\CloudContent'  /f /v 'DisableThirdPartySuggestions'   /t Reg_DWORD /d 1
+
+# "19.7.8.1 Ensure 'Configure Windows spotlight on lock screen' is set to Disabled'" : [FAILED]
+reg add 'HKU\S-1-5-21-3441312238-2935593948-1070341977-1005\Software\Policies\Microsoft\Windows\CloudContent'  /f /v 'ConfigureWindowsSpotlight'   /t Reg_DWORD /d 2
+
+
+# 19.7.4.2 (L1) Ensure 'Notify antivirus programs when opening attachments' is set to 'Enabled'
+reg add 'HKU\S-1-5-21-3441312238-2935593948-1070341977-1005\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Attachments'  /f /v 'ScanWithAntiVirus'   /t Reg_DWORD /d 3
+
+# "19.7.4.1 Ensure 'Do not preserve zone information in file attachments' is set to 'Disabled'" : [FAILED]
+reg add 'HKU\S-1-5-21-3441312238-2935593948-1070341977-1005\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments'  /f /v 'SaveZoneInformation'   /t Reg_DWORD /d 2
+
+# 19.5.1.1 (L1) Ensure 'Turn off toast notifications on the lock screen' is set to 'Enabled'
+reg add 'HKU\S-1-5-21-3441312238-2935593948-1070341977-1005\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications'  /f /v 'NoToastApplicationNotificationOnLockScreen'   /t Reg_DWORD /d 1
+
+# 19.7.45.2.1 (L2) Ensure 'Prevent Codec Download' is set to 'Enabled'
+reg add 'HKU\S-1-5-21-3441312238-2935593948-1070341977-1005\SOFTWARE\Policies\Microsoft\WindowsMediaPlayer'  /f /v 'PreventCodecDownload'   /t Reg_DWORD /d 1
+
+# 19.7.7.3 (L2) Ensure 'Do not use diagnostic data for tailored experiences' is set to 'Enabled'
+reg add 'HKU\S-1-5-21-3441312238-2935593948-1070341977-1005\Software\Policies\Microsoft\Windows\CloudContent'  /f /v 'DisableTailoredExperiencesWithDiagnosticData'   /t Reg_DWORD /d 1
+
+# 19.6.5.1.1 (L2) Ensure 'Turn off Help Experience Improvement Program' is set to 'Enabled'
+reg add 'HKU\S-1-5-21-3441312238-2935593948-1070341977-1005\SOFTWARE\Policies\Microsoft\Assistance\Client\1.0'  /f /v 'NoImplicitFeedback'   /t Reg_DWORD /d 1
+
+# 19.7.45.2.1 (L2) Ensure 'Prevent Codec Download' is set to 'Enabled'
+reg add 'HKU\S-1-5-21-3441312238-2935593948-1070341977-1005\SOFTWARE\Policies\Microsoft\WindowsMediaPlayer'  /f /v 'PreventCodecDownload'   /t Reg_DWORD /d 1
+
+
+#  19.1.3.4 (L1) Ensure 'Screen saver timeout' is set to 'Enabled: 900 seconds or fewer, but not 0'
+reg add 'HKU\S-1-5-21-3441312238-2935593948-1070341977-1005\SOFTWARE\Policies\Microsoft\Windows\Control Panel\Desktop'  /f /v 'ScreenSaveTimeOut'   /t Reg_DWORD /d 900
+
+
+#  19.1.3.3 (L1) Ensure 'Password protect the screen saver' is set to 'Enabled'
+reg add 'HKU\S-1-5-21-3441312238-2935593948-1070341977-1005\SOFTWARE\Policies\Microsoft\Windows\Control Panel\Desktop'  /f /v 'ScreenSaverIsSecure'   /t Reg_DWORD /d 1
+
+# "19.1.3.1 Ensure 'Enable screen saver' is set to 'Enabled'" : [FAILED]
+reg add 'HKU\S-1-5-21-3441312238-2935593948-1070341977-1005\SOFTWARE\Policies\Microsoft\Windows\Control Panel\Desktop'  /f /v 'ScreenSaveActive'   /t Reg_DWORD /d 1
+
+```
