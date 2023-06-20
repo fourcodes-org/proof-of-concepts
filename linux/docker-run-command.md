@@ -63,7 +63,7 @@ To create volume
 docker volume create volume name
 ```
 ```bash
-Docker volume ls
+docker volume ls
 ```
 
 To inspect 
