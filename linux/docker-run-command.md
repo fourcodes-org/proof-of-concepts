@@ -47,10 +47,10 @@ docker rmi imageame
 ```
 Docker running commands
 ```bash 
-Docker Start container name
-Docker restart container name
-Docker Stop Container name
-Docker kill container name
+docker Start container name
+docker restart container name
+docker Stop Container name
+docker kill container name
 ```
 
 To login
