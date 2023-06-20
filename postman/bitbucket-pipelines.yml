@@ -4,5 +4,5 @@ pipelines:
   default:
     - step:
         script:
-          - npm install -g newman
-          - newman run main.json
+          - npm install -g newman newman-reporter-html
+          - newman run main.json -r html
