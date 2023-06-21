@@ -5,6 +5,6 @@ WORKDIR /
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY pipe /
-COPY pipe.yml README.md /
+COPY pipe.yml Readme.md /
 
 ENTRYPOINT ["python3", "/pipe.py"]
