@@ -1,0 +1,22 @@
+name: Email Notify
+image: bitbucketpipelines/email-notify:0.8.0
+description: Send a notification to email.
+category: Notifications
+variables:
+  - name: USERNAME
+    default: "$USERNAME"
+  - name: PASSWORD
+    default: "$PASSWORD"
+  - name: FROM
+    default: "$FROM"
+  - name: TO
+    default: "$TO"
+  - name: HOST
+    default: "$HOST"
+repository: https://bitbucket.org/atlassian/email-notify
+maintainer:
+  name: Atlassian
+  website: https://www.atlassian.com/
+tags:
+    - email
+    - notify
