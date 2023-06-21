@@ -1,6 +1,6 @@
 _nginx reverse proxy with out ssl offloading_
 
-This folder contains two files. One is called 'Dockerfile,' while the other is'reverse-proxy.conf.'
+This folder contains two files. One is called `Dockerfile`, while the other is `reverse-proxy.conf`.
 
 By default, it is pointed to `api.github.com`. If you want to modify the backend service, you can replace the configuration, build the Docker image, and run it. 
 
