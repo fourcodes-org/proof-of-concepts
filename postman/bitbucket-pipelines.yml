@@ -8,6 +8,7 @@ pipelines:
           - newman run main.json -r html
           - mv newman/*.html main.html
         after-script:
+          - ALERT_TYPE="success"
           - pipe: atlassian/email-notify:0.8.0
             variables:
               USERNAME: $SMTP_USERNAME
@@ -17,5 +18,5 @@ pipelines:
               HOST: 'email-smtp.ap-south-1.amazonaws.com'
               PORT: 587
               DEBUG: 'true'
-              SUBJECT: '${ALERT_TYPE}:Bitbucket Pipe Notification for ${BITBUCKET_BRANCH}'
+              SUBJECT: '${ALERT_TYPE}:Bitbucket Pipe POSTMAN Notification for ${BITBUCKET_BRANCH}'
               ATTACHMENTS: 'main.html'
