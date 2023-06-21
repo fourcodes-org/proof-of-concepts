@@ -1,4 +1,4 @@
-# Bitbucket Pipelines Pipe: Email Notify
+# Email Notify
 
 Send email with a specific message.
 
