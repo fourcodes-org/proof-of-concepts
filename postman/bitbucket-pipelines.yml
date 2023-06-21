@@ -7,7 +7,6 @@ pipelines:
           - npm install -g newman newman-reporter-html
           - newman run main.json -r html
           - mv newman/*.html main.html
-          - cat main.html
         after-script:
           - pipe: atlassian/email-notify:0.8.0
             variables:
@@ -17,5 +16,6 @@ pipelines:
               TO: 'jjino@gmail.com'
               HOST: 'email-smtp.ap-south-1.amazonaws.com'
               PORT: 587
-              BODY_HTML: 'main.html'
               DEBUG: 'true'
+              SUBJECT: '${ALERT_TYPE}:Bitbucket Pipe Notification for ${BITBUCKET_BRANCH}'
+              ATTACHMENTS: 'main.html'
