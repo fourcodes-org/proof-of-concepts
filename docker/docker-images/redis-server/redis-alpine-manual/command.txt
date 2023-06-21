@@ -1,0 +1,13 @@
+# docker run -ti alpine bash
+# apk add --update redis
+
+
+#@@@@@ Open second terminal window @@@@@#
+
+#docker ps (select container ID)
+#docker commit -c 'CMD ["redis-server"]' (Paste selected continer ID)
+
+#%%%% VERIFY THE IMAGES %%%%%%#
+
+#docker images
+#docker run image-id
