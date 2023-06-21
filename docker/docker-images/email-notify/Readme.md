@@ -158,22 +158,3 @@ after-script:
       HOST: 'smtp.gmail.com'
       SUBJECT: '${ALERT_TYPE}:Bitbucket Pipe Notification for ${BITBUCKET_BRANCH}'
 ```
-
-
-## Support
-If youâ€™d like help with this pipe, or you have an issue or feature request, [let us know on Community][community].
-
-If youâ€™re reporting an issue, please include:
-
-* the version of the pipe
-* relevant logs and error messages
-* steps to reproduce
-
-
-## License
-Copyright (c) 2018 Atlassian and others.
-Apache 2.0 licensed, see [LICENSE.txt](LICENSE.txt) file.
-
-
-[community]: https://community.atlassian.com/t5/forums/postpage/board-id/bitbucket-questions?add-tags=bitbucket-pipelines,pipes,email,notification
-[variables and secrets]: https://support.atlassian.com/bitbucket-cloud/docs/variables-and-secrets
