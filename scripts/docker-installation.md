@@ -1,8 +1,8 @@
 ## Installing docker with shell script 
-
+`udo vim docker-installation.sh`
 ```bash
 #!/usr/bin/env bash
-# docker-installation.sh
+# sudo vim docker-installation.sh
 PACKAGE=docker-ce
 PACKAGE_STATUS=$(dpkg --get-selections ${PACKAGE} 2>&1 | grep 'install' | awk '{ print $2 }')
 
