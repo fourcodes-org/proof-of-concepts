@@ -14,3 +14,7 @@ When try to launch mysql docker container. it says some error.
 ss -tulpn | grep 3306
 sudo systemctl stop mysql
 ```
+ERROR 3
+-------
+![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/30ae65e1-d72b-4f44-9d7a-e968d3e9a0ce)
+
