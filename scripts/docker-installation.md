@@ -1,5 +1,5 @@
 ## Installing docker with shell script 
-`udo vim docker-installation.sh`
+`sudo vim docker-installation.sh`
 ```bash
 #!/usr/bin/env bash
 # sudo vim docker-installation.sh
