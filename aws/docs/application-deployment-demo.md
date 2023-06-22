@@ -57,6 +57,8 @@ we used the network we need remove the private2(subnet3) ip from Private-RT-01 a
 ![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/5a612442-d642-44f0-89e9-ba0244cd1660)
 
 Install the packages for the below,
+
+**Manual Method in db server**
 ```sh
 # Install the mysql package
 sudo apt install mysql-server -y
@@ -94,15 +96,37 @@ sudo netstat -tulpn | grep mysql
 
 **Note:**
 https://www.configserverfirewall.com/ubuntu-linux/enable-mysql-remote-access-ubuntu/#:~:text=To%20enable%20remote%20connections%20to%20the%20MySQL%20Server%2C,the%20%5Bmysqld%5D%20Locate%20the%20Line%2C%20bind-address%20%3D%20127.0.0.1
+
 **db-server-SG**
 Inbound rule
 ![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/4c98997c-2aa7-4e55-90fd-f11df51779f8)
 Outbound rule
 ![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/71ff554e-9ed1-471e-adbe-f168e001e180)
 
+Mathod 2 - Docker method
+-------
+```bash
+# create the container
+docker run --name db -e MYSQL_ROOT_PASSWORD=. -e MYSQL_DATABASE=testing -e MYSQL_USER=joe -e MYSQL_PASSWORD=Password@123 --network=host -d  mysql:5.7
+
+# login to the joe use
+sudo mysql -u joe -p
+
+#  grant all privileges to the user
+GRANT ALL PRIVILEGES ON *.* TO 'joe'@'%';
+
+# grant the privileges
+FLUSH PRIVILEGES;
+
+# create the database
+CREATE DATABASE testing;
+```
+
 **2. app-server(nodeserver)**
 ![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/10a0bd39-389f-44e1-adbd-e0d68351c37b)
 
+Method 1 - Manual Method
+---------
 
 `sudo vim node.sh`
 ```sh
@@ -142,6 +166,24 @@ Outbound Rule
 **web-server**
 ![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/e2813c20-6ab5-4c49-b55b-f3aa030ae629)
 
+Method 2 - Docker method in node server
+---------------
+```bash
+
+# vim Dockerfile
+FROM node:alpine
+WORKDIR /app
+COPY package.json .
+RUN npm install
+COPY . .
+CMD ["node", "index.js"]
+
+# build a docker image
+docker build -t (imageNAme) .
+
+# run a docker container using docker image
+docker run -d -it -p 3000:3000 --name (continerName) (imageNAme)
+```
 
 ```sh
 # create the dir
