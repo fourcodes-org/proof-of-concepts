@@ -29,3 +29,9 @@ fi
 ```bash
 bash docker-installation.sh
 ```
+**Check the status of docker**
+```bash
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo systemctl status docker
+```
