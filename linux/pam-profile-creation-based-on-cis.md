@@ -29,7 +29,7 @@ auth required pam_faillock.so authfail deny=5 unlock_time=900
 auth required pam_faillock.so preauth silent deny=5 unlock_time=900
 auth required pam_faillock.so authfail deny=5 unlock_time=900
 
-rep -E '^\s*auth\s+required\s+pam_faillock.so\s+' /etc/pam.d/password-auth /etc/pam.d/system-auth 
+grep -E '^\s*auth\s+required\s+pam_faillock.so\s+' /etc/pam.d/password-auth /etc/pam.d/system-auth 
 
 # Modify the existing line
 
