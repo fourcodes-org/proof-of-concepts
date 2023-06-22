@@ -1,4 +1,4 @@
-Infra
+Infrastructure of the application
 -----
 `VPC CONCEPT`
 - 1 VPC
