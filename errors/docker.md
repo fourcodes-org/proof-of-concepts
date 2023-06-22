@@ -1,6 +1,7 @@
 ERROR 1
 -------
 ![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/8bda759d-370e-4a9e-b74a-7a12f43ec0b1)
+![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/30ae65e1-d72b-4f44-9d7a-e968d3e9a0ce)
 **Solution**
 ```bash
 sudo chmod 664 /var/run/docker.sock
@@ -16,5 +17,5 @@ sudo systemctl stop mysql
 ```
 ERROR 3
 -------
-![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/30ae65e1-d72b-4f44-9d7a-e968d3e9a0ce)
+
 
