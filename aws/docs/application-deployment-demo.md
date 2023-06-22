@@ -56,9 +56,15 @@ we used the network we need remove the private2(subnet3) ip from Private-RT-01 a
 **3. db-server**
 ![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/5a612442-d642-44f0-89e9-ba0244cd1660)
 
+**db-server-SG**
+Inbound rule
+![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/4c98997c-2aa7-4e55-90fd-f11df51779f8)
+Outbound rule
+![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/71ff554e-9ed1-471e-adbe-f168e001e180)
 Install the packages for the below,
 
-**Manual Method in db server**
+Method 1 - Manual Method in db server
+------
 ```sh
 # Install the mysql package
 sudo apt install mysql-server -y
@@ -97,12 +103,6 @@ sudo netstat -tulpn | grep mysql
 **Note:**
 https://www.configserverfirewall.com/ubuntu-linux/enable-mysql-remote-access-ubuntu/#:~:text=To%20enable%20remote%20connections%20to%20the%20MySQL%20Server%2C,the%20%5Bmysqld%5D%20Locate%20the%20Line%2C%20bind-address%20%3D%20127.0.0.1
 
-**db-server-SG**
-Inbound rule
-![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/4c98997c-2aa7-4e55-90fd-f11df51779f8)
-Outbound rule
-![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/71ff554e-9ed1-471e-adbe-f168e001e180)
-
 Mathod 2 - Docker method
 -------
 ```bash
@@ -124,6 +124,14 @@ CREATE DATABASE testing;
 
 **2. app-server(nodeserver)**
 ![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/10a0bd39-389f-44e1-adbd-e0d68351c37b)
+
+**app-server-SG**
+
+Inbound Rule
+![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/28678069-1d9d-4034-8a8c-f58fc99e2654)
+Outbound Rule
+![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/cbc596b3-6480-4637-a92c-bf4c92834018)
+
 
 Method 1 - Manual Method
 ---------
@@ -156,15 +164,9 @@ npm install
 # in app server, we should check the connection between db server
 telnet (dbserver Private instance ip address) 3306
 ```
-**app-server-SG**
-
-Inbound Rule
-![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/28678069-1d9d-4034-8a8c-f58fc99e2654)
-Outbound Rule
-![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/cbc596b3-6480-4637-a92c-bf4c92834018)
-
-**web-server**
-![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/e2813c20-6ab5-4c49-b55b-f3aa030ae629)
+![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/150aabe8-f124-428f-ad1f-51a227613e7f)
+connectivity for app server and db server 
+![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/2bc6b275-e0d0-4b00-9675-c2f96552b6f5)
 
 Method 2 - Docker method in node server
 ---------------
@@ -184,6 +186,17 @@ docker build -t (imageNAme) .
 # run a docker container using docker image
 docker run -d -it -p 3000:3000 --name (continerName) (imageNAme)
 ```
+
+**1. web-server**
+![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/e2813c20-6ab5-4c49-b55b-f3aa030ae629)
+
+**web-server-SG**
+
+Inbound Rule
+![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/36a080c8-092e-4ee5-b772-170e558e9ce4)
+
+Outbound Rule
+![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/4211c054-b416-451d-8757-d8479eeb1a96)
 
 ```sh
 # create the dir
@@ -216,8 +229,8 @@ COPY reverse.conf  /etc/nginx/sites-enabled/januo.io.conf
 CMD ["nginx", "-g", "daemon off;"]
 
 ```
-After creating the docker file, we use the below command
 
+After creating the docker file, we use the below command.
 ```sh
 # build a image
 docker build -t reverseproxy-img .
@@ -234,14 +247,11 @@ docker rm -f $(docker ps -a -q)
 # delete all the images
 docker rmi -f $(docker images -aq)
 ```
-**web-server-SG**
-![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/36a080c8-092e-4ee5-b772-170e558e9ce4)
-
-![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/4211c054-b416-451d-8757-d8479eeb1a96)
 
 
 **Test the nodejs application from webserver**
 `curl -l (app-ip-address:port)`
+![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/6f85a6bb-efca-4a18-9245-063b3e3b6232)
 
 **After getting the reponse, we need to go for the browser and past it the `public ip`**
 ![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/a9f5ab21-68dc-4bda-b477-55597d24fd39)
