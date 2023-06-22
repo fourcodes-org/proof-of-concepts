@@ -22,7 +22,7 @@ if [ install != "${PACKAGE_STATUS}" ]; then
 else
     echo -e "\e[1;31m${PACKAGE} is already installed "
 fi
-
+```
 
 **_bash run command_**
 
