@@ -40,3 +40,30 @@ def validation_of_source(allowed_file_type_list, name_of_file):
 
 print(validation_of_source(allowed_file_type_list, "scan.gitlab.ci.yml"))
 ```
+
+_secret manager_
+
+```py
+import pathlib
+import boto3
+import json
+
+def check_availability(element, collection: iter):
+    return element in collection
+
+def retrive_data_from_secret_manager(secret_name):
+    client = boto3.client('secretsmanager')
+    get_secret_value_response = client.get_secret_value(SecretId=secret_name)
+    secret = get_secret_value_response['SecretString']
+    return secret
+
+def validation_of_source(name_of_file):
+    extension_of_file = pathlib.Path(name_of_file).suffix
+    actual_string = str(extension_of_file.rsplit(".", 1)[1])
+    file_status = check_availability(actual_string, retrive_data_from_secret_manager(secret_name))
+    # file_status = check_availability(actual_string, allowed_file_type_list)
+    return file_status
+
+secret_name = "sm-prod/allowed-file-types-list"
+print(validation_of_source("demo.py")
+```
