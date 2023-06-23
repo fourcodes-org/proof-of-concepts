@@ -183,8 +183,11 @@ CMD ["node", "index.js"]
 # build a docker image
 docker build -t (imageNAme) .
 
-# run a docker container using docker image
+# normal method - run a docker container using docker image
 docker run -d -it -p 3000:3000 --name (continerName) (imageNAme)
+[or]
+# When we use mysql --network=host container, we need to run as this method.
+docker -d run --network=host --name (continerName) (imageNAme)
 ```
 
 **1. web-server**
