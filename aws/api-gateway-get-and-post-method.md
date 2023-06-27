@@ -190,3 +190,25 @@ proxy integration with lambda
 ```bash
 key="tmp/demo.txt"&expire=20&bucket="secret-jn"
 ```
+
+
+```json
+{
+    "type" : "object",
+    "required" : [ "bucket", "key", "expire" ],
+    "properties" : {
+      "bucket" : {
+        "type" : "string",
+        "enum" : [ "dog", "cat", "fish" ]
+      },
+      "expire" : {
+        "type" : "number",
+        "minimum" : 1,
+        "maximum" : 500
+      },      
+      "key" : {
+        "type" : "string"
+      }
+    }
+}
+```
