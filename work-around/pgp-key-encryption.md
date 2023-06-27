@@ -83,3 +83,30 @@ with open('Efile', 'rb') as f:
 
 ```
 
+_encryption key creation_
+
+```py
+
+import gnupg
+import re
+class pgp_encrypt_and_decrypt():
+    tempdir = "/tmp/"
+
+    def __init__(self, name_of_email):
+        self.name_of_email = name_of_email
+        self.gpg = gnupg.GPG()
+
+    def generate_gpg_key(self):
+        input_data = self.gpg.gen_key_input(name_email=self.name_of_email)
+        key = self.gpg.gen_key(input_data)
+        ascii_armored_private_keys = self.gpg.export_keys(keyids=key.fingerprint)
+        name_of_export_file = self.tempdir + re.split(r'@', self.name_of_email)[0] + ".asc"
+
+        with open(name_of_export_file, 'w') as f:
+            f.write(ascii_armored_private_keys)
+
+        return name_of_export_file
+
+key = pgp_encrypt_and_decrypt("agency02@bca.gov.sg")
+print(key.generate_gpg_key())
+```
