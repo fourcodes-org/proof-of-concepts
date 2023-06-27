@@ -213,3 +213,13 @@ _model json for api gateway_
     }
 }
 ```
+
+_validation_
+
+```json
+{
+    "bucket": "dog",
+    "key": "frmo.txt",
+    "expire": 20
+}
+```
