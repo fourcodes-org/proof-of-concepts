@@ -191,6 +191,7 @@ proxy integration with lambda
 key="tmp/demo.txt"&expire=20&bucket="secret-jn"
 ```
 
+_model json for api gateway_
 
 ```json
 {
