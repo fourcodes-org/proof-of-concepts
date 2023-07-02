@@ -11,7 +11,7 @@ while execute the script it will show all the AWS REST API.
 _aws Resource naming convention_
 
 ```bash
-[resource common name]-[project name]-[project code]-[environment]-[purpose-resource]
+[resource-common-name]-[project-name]-[project-code]-[environment]-[purpose-resource]
 
 lambda-januo-001-dev-event
 lambda-januo-001-dev-replication
