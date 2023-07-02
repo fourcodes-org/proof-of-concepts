@@ -121,9 +121,12 @@ flush privileges;
 Restting the root password
 
 ```bash
-
 ALTER USER 'root'@'localhost' IDENTIFIED BY 'MyNewPass';
+```
 
+* How to change root password and stop root-logins without password
+```cmd
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'test';
 ```
 
 _Revoke Permmission_
