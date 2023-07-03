@@ -1,7 +1,4 @@
 ## How to backup all the database as a single file
-
-How to backup all the database as a single file
----------------------------------------
 - [ ] _Open a terminal_
 - [ ] _Use the below command to perform the all db backup:_
 ```sh
