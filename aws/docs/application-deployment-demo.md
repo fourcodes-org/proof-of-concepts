@@ -103,7 +103,7 @@ sudo netstat -tulpn | grep mysql
 **Note:**
 https://www.configserverfirewall.com/ubuntu-linux/enable-mysql-remote-access-ubuntu/#:~:text=To%20enable%20remote%20connections%20to%20the%20MySQL%20Server%2C,the%20%5Bmysqld%5D%20Locate%20the%20Line%2C%20bind-address%20%3D%20127.0.0.1
 
-Mathod 2 - Docker method
+Method 2 - Docker method
 -------
 ```bash
 # create the container
