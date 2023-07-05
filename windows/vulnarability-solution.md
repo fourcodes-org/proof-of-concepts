@@ -198,4 +198,6 @@ reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\tcpip6\parameters"
 reg add "HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows NT\Printers" /f /v RegisterSpoolerRemoteRpcEndPoint /t REG_DWORD /d 2
 # 18.6.2 Ensure 'Point and Print Restrictions: When installing drivers for a new connection' is set to 'Enabled: Show warning and elevation prompt'
 
+# auto updates
+reg add "HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\WindowsUpdate\AU" /f /v NoAutoUpdate /t REG_DWORD /d 0
 ```
