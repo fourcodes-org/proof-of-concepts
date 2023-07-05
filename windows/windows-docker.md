@@ -7,4 +7,6 @@ Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -Verbo
 Enable-WindowsOptionalFeature -Online -FeatureName Containers -All -Verbose
 
 bcdedit /set hypervisorlaunchtype Auto
+
+dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
 ```
