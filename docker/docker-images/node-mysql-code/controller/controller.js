@@ -1,4 +1,4 @@
-const test_table = require("../models/test_table");
+const test_table = require("../models/model");
 
 const postTesting = (req, res) => {
   const details = req.body;

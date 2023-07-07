@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const event_controller = require("../controller/test_controller");
+const event_controller = require("../controller/controller");
 
 router.get("/", event_controller.getTesting);
 

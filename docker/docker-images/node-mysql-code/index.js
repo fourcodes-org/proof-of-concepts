@@ -10,23 +10,18 @@ app.use(cookieParser());
 app.use(morgan("combined"));
 app.use(cors());
 app.use(helmet());
-app.use(cors(corsOptions));
 
 const sequelize = require("./config/db");
 sequelize.sync();
-
-var corsOptions = {
-  origin: "http://localhost:8081",
-};
 
 app.get("/", (req, res) =>
   res.json({ message: "Welcome to testing application." })
 );
 
-const test_route = require("./route/test_route");
+const test_route = require("./route/route");
 app.use("/testing", test_route);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.NODE_PORT || 3000;
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
