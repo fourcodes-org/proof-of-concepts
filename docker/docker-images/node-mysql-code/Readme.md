@@ -7,7 +7,7 @@ _Run as Db container_
 Create the db container
 
 ```bash
-docker run --name db -e MYSQL_ROOT_PASSWORD=Password -e MYSQL_DBNAME=januo -e MYSQL_USER=januo -e MYSQL_PASSWORD=januo -d mysql
+docker run --name db -e MYSQL_ROOT_PASSWORD=Password -e MYSQL_DATABASE=januo -e MYSQL_USER=januo -e MYSQL_PASSWORD=januo -d mysql
 ```
 
 To establish connectivity from Node.js, we need to pass certain parameters as environment variables, as shown below.
@@ -15,7 +15,7 @@ To establish connectivity from Node.js, we need to pass certain parameters as en
 Based on the DB container, I set the variable as follows.
 
 ```bash
-export MYSQL_HOSTNAME="db"
+export MYSQL_HOSTNAME="172.17.0.2"
 export MYSQL_DBNAME="januo"
 export MYSQL_USERNAME="januo"
 export MYSQL_PASSWORD="januo"
@@ -28,7 +28,7 @@ After installing the Docker packages, we need to use the following command to cr
 
 ```bash
 docker build -t node-mysql-app .
-docker run -it -d  -e MYSQL_HOSTNAME=db -e MYSQL_DBNAME=januo -e MYSQL_USERNAME=januo -e MYSQL_PASSWORD=januo -e ODE_PORT=3000 -p 3000:3000 --name node-app node-mysql-app
+docker run -it -d  -e MYSQL_HOSTNAME="172.17.0.2" -e MYSQL_DBNAME=januo -e MYSQL_USERNAME=januo -e MYSQL_PASSWORD=januo -e ODE_PORT=3000 -p 3000:3000 --name node-app node-mysql-app
 ```
 
 _URL Access_
