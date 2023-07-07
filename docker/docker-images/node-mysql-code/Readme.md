@@ -35,3 +35,7 @@ _URL Access_
 ```bash
 curl http://node-address:3000
 ```
+
+Reference
+---------
+https://github.com/januo-org/proof-of-concepts/blob/main/aws/docs/application-deployment-demo.md
