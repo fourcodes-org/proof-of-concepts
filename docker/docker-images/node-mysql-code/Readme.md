@@ -4,10 +4,9 @@ After installing the Docker packages, we need to use the following command to cr
 
 _Run as Db container_
 
-Create the db container
-
 ```bash
 docker run --name db -e MYSQL_ROOT_PASSWORD=Password -e MYSQL_DATABASE=januo -e MYSQL_USER=januo -e MYSQL_PASSWORD=januo -d mysql
+docker inspect db
 ```
 
 To establish connectivity from Node.js, we need to pass certain parameters as environment variables, as shown below.
