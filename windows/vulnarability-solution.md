@@ -1,3 +1,11 @@
+_Defendor Antivirus_
+
+```powershell
+cd %ProgramFiles%\Windows Defender
+MpCmdRun.exe -removedefinitions -dynamicsignatures
+MpCmdRun.exe -SignatureUpdate
+```
+
 _The remote Windows host is potentially missing a mitigation for a remote code execution vulnerability_
 
 ```powershell
