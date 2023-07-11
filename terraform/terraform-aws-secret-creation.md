@@ -1,4 +1,4 @@
-
+```tf
 resource "aws_secretsmanager_secret" "scm" {
   name = var.rc_secret_name
 }
