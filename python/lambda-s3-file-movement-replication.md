@@ -1,4 +1,4 @@
-_source => intranet_
+_source intranet_
 
 ```py
 import boto3
