@@ -8,7 +8,7 @@ resource "aws_secretsmanager_secret_version" "scm" {
   secret_string = jsonencode(var.rc_secret_value)
 }
 
-variable "secret_name" {}
+variable "rc_secret_name" {}
 variable "rc_secret_value" {
   type = map(string)
 }
