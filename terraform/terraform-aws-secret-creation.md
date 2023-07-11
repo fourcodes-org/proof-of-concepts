@@ -1,17 +1,24 @@
 
-```tf
-resource "aws_secretsmanager_secret" "kms_id_secret_name" {
-  name = var.kms_id_secret_name
+resource "aws_secretsmanager_secret" "scm" {
+  name = var.rc_secret_name
 }
 
-resource "aws_secretsmanager_secret_version" "kms_id_secret_value" {
-  secret_id     = aws_secretsmanager_secret.kms_id_secret_name.id
-  secret_string = var.kms_id_secret_value
+resource "aws_secretsmanager_secret_version" "scm" {
+  secret_id     = aws_secretsmanager_secret.scm.id
+  secret_string = jsonencode(var.rc_secret_value)
 }
 
-variable "kms_id_secret_name" {}
-variable "kms_id_secret_value" {}
+variable "secret_name" {}
+variable "rc_secret_value" {
+  type = map(string)
+}
 
-kms_id_secret_name = ""
-kms_id_secret_value = ""
+
+
+rc_secret_name = "respoce_controller_secret"
+rc_secret_value = {
+    key1 = "value1"
+    key2 = "value2"
+}
+
 ```
