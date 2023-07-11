@@ -1,11 +1,11 @@
 
 ```tf
-resource "aws_secretsmanager_secret" "sm1" {
+resource "aws_secretsmanager_secret" "kms_id_secret_name" {
   name = var.kms_id_secret_name
 }
 
-resource "aws_secretsmanager_secret_version" "sm1" {
-  secret_id     = aws_secretsmanager_secret.sm1.id
+resource "aws_secretsmanager_secret_version" "kms_id_secret_value" {
+  secret_id     = aws_secretsmanager_secret.kms_id_secret_name.id
   secret_string = var.kms_id_secret_value
 }
 
