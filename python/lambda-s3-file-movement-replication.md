@@ -195,6 +195,8 @@ def lambda_handler(event, context):
 
 ```
 
+_work around_
+```py
 """
 import re
 
