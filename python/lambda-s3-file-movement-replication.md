@@ -197,7 +197,6 @@ def lambda_handler(event, context):
 
 _work around_
 ```py
-"""
 import re
 
 def find_combinations(file_path):
@@ -214,5 +213,4 @@ def find_combinations(file_path):
 file_path = 'path/CD/your/file.txt'
 combinations = find_combinations(file_path)
 print(combinations)
-"""
 ```
