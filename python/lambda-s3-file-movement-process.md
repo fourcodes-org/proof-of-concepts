@@ -235,3 +235,18 @@ def lambda_handler(event, context):
     handler.handle()
 
 ```
+
+_work around_
+
+```py
+import re
+
+def find_combinations(file_path):
+    pattern = 'A_B/|A_BC/|A_C/|A/|B_C/|B_CD/|B_D/|B/|C/|C_B/|C_BA/|D_B/|C/'
+    matches = re.findall(pattern, file_path)
+    return matches[0].replace("/", "") if matches != [] else False
+
+file_path = 'path/A_B/your/file.txt'
+combinations = find_combinations(file_path)
+print(combinations)
+```
