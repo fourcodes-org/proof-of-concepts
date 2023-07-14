@@ -36,6 +36,9 @@ example:
 in app(node) server,
 `node index.js` or 'nodemon index.js`
 ```
+ERROR 5
+-------
+![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/097b7d0a-c83b-43b1-bab8-97d422b12e0f)
 
 
 
