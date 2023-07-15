@@ -227,6 +227,8 @@ aws cloudformation create-stack --stack-name postman-api --template-body file://
 
 _update stack_
 
+please use the following command to update your existing stack.
+
 ```bash
 aws cloudformation update-stack --stack-name postman-api --template-body file://main.yml --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
 ```
