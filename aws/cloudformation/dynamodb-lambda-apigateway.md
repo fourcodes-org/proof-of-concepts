@@ -82,64 +82,52 @@ Resources:
           DYNAMO_DB_NAME: !Ref dynamoDbName
       Code:
         ZipFile: |
-          import json
-          import boto3
-          import os
-
-          dynamodb = boto3.resource('dynamodb')
-          table_name = os.environ.get('DYNAMO_DB_NAME')
-
-          def lambda_handler(event, context):
-              if (event['httpMethod'] == 'GET'):
-                  data = get_records()
-                  return {
-                      "statusCode": 200,
-                      "body": json.dumps({"statusCode": 200,"data": data}),
-                      "headers": {
-                          "Content-Type": "application/json"
-                      }
-                  }
-
-              elif (event['httpMethod'] == 'POST'):
-                  body = json.loads(event['body'])
-                  vname = 'name' in body.keys()
-                  vid = 'id' in body.keys()
-                  vdob = 'dob' in body.keys()
-                  if (vname == True and vid == True and vdob == True):
-                      name = body['name']
-                      id = body['id']
-                      dob = body['dob']
-                      data = create_records(name, id, dob)
-                      return data
-                  else:
-                      return {
-                          'statusCode': 400,
-                          "body": json.dumps({"statusCode": 400, "Message": "BadRequest"})
-                      }
-              else:
-                  return {
-                      'statusCode': 400,
-                      'body': json.dumps('Invalid HTTP Method')
-                  }
-
-          def get_records():
-              table = dynamodb.Table(table_name)
-              response = table.scan()
-              records = response['Items']
-              return records
-
-          def create_records(name, id, dob):
-              table = dynamodb.Table(table_name)
-              Item = {
-                  'name': name,
-                  'id': id,
-                  'dob': dob
-              }
-              response = table.put_item(Item=Item)
-              return {
-                  'statusCode': 200,
-                  'body': json.dumps(response)
-              }
+		import json
+		import boto3
+		import os
+		
+		dynamodb = boto3.resource('dynamodb')
+		table_name = os.environ.get('DYNAMO_DB_NAME')
+		table = dynamodb.Table(table_name)
+		
+		def lambda_handler(event, context):
+		    http_method = event.get('httpMethod')
+		
+		    if http_method == 'GET':
+			data = get_records()
+			response = create_response(200, data)
+		    elif http_method == 'POST':
+			body = json.loads(event['body'])
+			required_keys = ['name', 'id', 'dob']
+			if all(key in body for key in required_keys):
+			    record = {
+				'name': body['name'],
+				'id': body['id'],
+				'dob': body['dob']
+			    }
+			    records = create_records(record)
+			    response = create_response(200, records)
+			else:
+			    response = create_response(400, {'Message': 'BadRequest'})
+		    else:
+			response = create_response(400, 'Invalid HTTP Method')
+		
+		    return response
+		
+		def get_records():
+		    response = table.scan()
+		    records = response['Items']
+		    return records
+		
+		def create_records(record):
+		    response = table.put_item(Item=record)
+		    return response
+		
+		def create_response(status_code, data):
+		    return {
+			'statusCode': status_code,
+			'body': json.dumps({'statusCode': status_code, 'data': data})
+		    }
 
   ApiGatewayCreation:
     Type: AWS::ApiGateway::RestApi
