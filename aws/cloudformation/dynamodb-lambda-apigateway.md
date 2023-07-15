@@ -221,6 +221,8 @@ Outputs:
 
 _create the stack_
 
+please use the following command to create your stack.
+
 ```bash
 aws cloudformation create-stack --stack-name postman-api --template-body file://main.yml --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
 ```
@@ -235,6 +237,8 @@ aws cloudformation update-stack --stack-name postman-api --template-body file://
 
 
 _delete stack_
+
+please use the following command to delete your stack.
 
 ```bash
 aws cloudformation delete-stack --stack-name postman-api
