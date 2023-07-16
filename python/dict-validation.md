@@ -1,4 +1,5 @@
 
+_Bad approach_
 
 ```py
 body = {
@@ -15,7 +16,11 @@ if len(body) == 3:
         print("invalid")
 else:
     print("invalid")
+```
 
+_Good approach_
+
+```py
 body = {
     "name": "gino",
     "class": "python",
