@@ -149,7 +149,7 @@ class LambdaS3Handler:
         event_bucket = event_information.get_event_bucket()
         key = event_information.get_event_bucket_key()
 
-        event_processor = S3Processor(event_bucket, key)
+        event_processor = S3Process(event_bucket, key)
 
         if event_processor.object_state():
             if (event_name in ["PutObject", "CompleteMultipartUpload", "CopyObject"]) and (event_bucket == safe_intranet_bucket):
