@@ -189,7 +189,7 @@ class LambdaHandler:
                     event_processor.delete()
 
                 else:
-                    if "A_C" in key or "A_BC" in key or "A_B" in key:
+                    if "A_C" in key or "A_BC" in key or "A_B/" in key:
                         event_processor.update_tags(tagging_safe_internet_bucket)
                         event_processor.delete()
                     elif "D_B" in key:
