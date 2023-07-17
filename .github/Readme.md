@@ -30,8 +30,16 @@ git checkout main
 git pull 
 git tag -a v2.0 HEAD -m "v2.0 tag created"
 git push origin v2.0
+git checkout -b Hotfix/v4.1
+git commit -am "hotfix applied"
+git push --set-upstream origin Hotfix/v4.1
+git checkout main 
+git pull
+checkout develop 
+git pull
 ```
 
+![image](https://github.com/januo-org/proof-of-concepts/assets/57703276/84d30e91-e74a-4b0a-ae4c-4df93f955ed9)
 
 
 * Linux 
