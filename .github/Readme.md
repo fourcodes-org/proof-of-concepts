@@ -16,6 +16,8 @@ git push origin v1.0
 git checkout -b develop
 git push --set-upstream origin develop
 git checkout -b feature/v2.0
+# Modify index.json file
+git commit -am "v2.0 added"
 git push --set-upstream origin feature/v2.0
 # Create a pull request from feature/v2.0 into develop
 git checkout develop
