@@ -111,7 +111,7 @@ sudo apt install phpmyadmin
 
 _Configure the Php_
 
- **PHP **
+ **PHP**
 
 
 PHP is the language that is mostly used for server-side programming. It is executed, run, and must be installed on the webserver. Since it is an interpreted language, it doesn’t need any compiler. PHP handles the interaction between the front-end of the web pages and the back-end servers or databases.
