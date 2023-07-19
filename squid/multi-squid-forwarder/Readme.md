@@ -17,3 +17,14 @@ _traffic flow_
         | ez-gut-squid  (192.168.10.4)
         |
     [Internet]
+
+_works_
+
+```bash
+docker network create --driver=bridge --subnet=192.168.10.0/24 s1
+
+docker run -d --name container1 --network s1 jjino/iz-it-squid
+docker run -d --name container2 --network s1 jjino/ez-it-squid
+docker run -d --name container3 --network s1 jjino/ez-gut-squid
+
+```
