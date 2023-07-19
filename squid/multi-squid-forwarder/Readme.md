@@ -27,4 +27,6 @@ docker run -d --name container1 --network s1 jjino/iz-it-squid
 docker run -d --name container2 --network s1 jjino/ez-it-squid
 docker run -d --name container3 --network s1 jjino/ez-gut-squid
 
+docker inspect container1
+
 ```
