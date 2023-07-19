@@ -35,7 +35,7 @@ git commit -am "hotfix applied"
 git push --set-upstream origin Hotfix/v4.1
 git checkout main 
 git pull
-checkout develop 
+git checkout develop 
 git pull
 ```
 
