@@ -30,3 +30,12 @@ docker run -d --name container3 --network s1 jjino/ez-gut-squid
 docker inspect container1
 
 ```
+
+
+_debug_
+
+```bash
+tail -f /var/log/squid/access.log
+
+
+```
