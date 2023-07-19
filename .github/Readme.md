@@ -19,7 +19,7 @@ git checkout -b feature/v2.0
 # Modify index.json file
 git commit -am "v2.0 added"
 git push --set-upstream origin feature/v2.0
-# Create a pull request from feature/v2.0 into develop
+# Create a pull request from feature/v2.0 into develop ( develop <= feature/v2.0)
 git checkout develop
 git pull
 git checkout -b Release/v2.0
