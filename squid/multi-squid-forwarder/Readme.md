@@ -39,3 +39,10 @@ tail -f /var/log/squid/access.log
 
 
 ```
+
+`sudo vim /etc/environment`
+
+```bash
+http_proxy="http://192.168.10.2:3128/"
+https_proxy="http://192.168.10.2:3128/"
+```
