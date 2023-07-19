@@ -7,6 +7,9 @@ RUN apt update && apt install -y squid
 # Copy the Squid configuration file
 COPY squid.conf /etc/squid/squid.conf
 
+# logs /dev/stdout
+RUN ln -sf /dev/stdout /var/log/squid/access.log
+
 # Expose the Squid port
 EXPOSE 3128
 
