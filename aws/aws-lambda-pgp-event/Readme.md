@@ -11,7 +11,7 @@ import urllib
 
 
 s3_bucket_name = "januo-s3-bucks"
-KEYS_STORE_BUKCET = "sst-s3-bca-cnxcp-uat-sftp-pgpkey"
+KEYS_STORE_BUKCET = "sftp-pgpkey"
 
 class GnuPGHandler:
 

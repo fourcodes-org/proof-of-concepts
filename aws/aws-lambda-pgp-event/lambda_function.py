@@ -194,6 +194,7 @@ def lambda_handler(event, context):
                 os.remove(decryption_source_key_download)
 
             os.remove(decryption_agent_key_download)
+
         else:
             gpg_process_state_location = 'SFTP/PROC/' + reformation_file_name
             s3_processor.copy(event_bucket, gpg_process_state_location)
