@@ -7,9 +7,19 @@ import boto3
 import urllib
 
 
-s3_bucket_name = "januo-s3-bucks"
-KEYS_STORE_BUKCET = "sst-s3-bca-cnxcp-uat-sftp-pgpkey"
+key_store_name = os.environ.get('KEY_STORE_BUCKET_NAME')
+region_name = os.environ.get('REGION_NAME')
+allowed_agency_list_secret_name = os.environ.get('ALLOWED_AGENCY_LIST_SECRET_NAME')
 
+class SecretManager:
+    def __init__(self, region_name):
+        self.client = boto3.client('secretsmanager', region_name=region_name)
+
+    def retrieve_data(self, secret_name):
+        get_secret_value_response = self.client.get_secret_value(SecretId=secret_name)
+        secret = get_secret_value_response['SecretString']
+        return json.loads(secret)
+    
 class GnuPGHandler:
 
     TEMP_DIRECTORY = "tmp"
@@ -152,27 +162,20 @@ class S3Process:
 
 def lambda_handler(event, context):
     event_information = S3EventInformation(event, context)
-    event_name = event_information.get_event_name()
     event_bucket = event_information.get_event_bucket()
     key = event_information.get_event_bucket_key()
-
-    # event_bucket = "januo-s3-bucks"
-    # key = "SFTP/IN/jinojoe/A_B/test_uat.pdf.gpg"
-
     s3_processor = S3Process(event_bucket, key)
-    pgpEmailReceipt = "jinojoe@gmail.com"
-
-
     agent_name = re.split(r'/', key)[2]
+    retrieve_secret_data = SecretManager(region_name)
+    pgp_email_receipts = retrieve_secret_data.retrieve_data(allowed_agency_list_secret_name)["gpg_recipients"] 
+    pgp_email_receipt = next((pgp_email_receipt[agent_name] for pgp_email_receipt in pgp_email_receipts if pgp_email_receipt.get(agent_name)), None)
     reformation_file_name = s3_processor.ignore_path_position(3)
+    pgp_encryption = GnuPGHandler(pgp_email_receipt)
 
-    pgp_encryption = GnuPGHandler(pgpEmailReceipt)
 
-
-    if (s3_processor.object_state()):
+    if (s3_processor.object_state() and pgp_email_receipt is not None):
         if (pgp_encryption.is_valid_file_for_encryption(key)):
-            print("please do decryption")
-            decryption_agent_key_download = s3_processor.agent_key_download(event_bucket, agent_name)
+            decryption_agent_key_download = S3Process(key_store_name, agent_name + ".asc").download()
             decryption_source_key_download = s3_processor.download()
             decryption_status = pgp_encryption.decrypt_file_with_gpg_key(decryption_agent_key_download, decryption_source_key_download)
 
@@ -196,21 +199,4 @@ def lambda_handler(event, context):
             s3_processor.copy(event_bucket, gpg_process_state_location)
             s3_processor.delete()
     else:
-        s3_processor.logPoster(event_bucket, "unknown events")
-        
-        
-# def key_creation():
-#     locatio = pgp_encryption.generate_gpg_key()
-#     print(locatio)
-#     s3_processor.upload(locatio)
-
-#     key = "A_B/test_uat.pdf"
-#     s3_processor = S3Process(event_bucket, key)
-#     input_file = s3_processor.download()
-
-#     keyfile = "/tmp/jinojoe.asc"
-#     s3_processor = S3Process(event_bucket, keyfile)
-#     key_file = s3_processor.download()
-#     encrypt_file_with_gpg_key = pgp_encryption.encrypt_file_with_gpg_key(key_file, input_file)
-#     upload_key = encrypt_file_with_gpg_key['output_file']
-#     s3_processor.upload(upload_key, s3_bucket_name, upload_key)
+        s3_processor.log_poster(event_bucket, "unknown events or agency details")
