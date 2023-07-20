@@ -1,0 +1,6 @@
+
+email address => jinojoe@gmail.com
+
+path location => SFTP/IN/jinojoe/A_B/test_uat.pdf.gpg
+
+agent_name = jinojoe
