@@ -190,7 +190,7 @@ _Create a new server blocks configuration_
 sudo nano /etc/nginx/sites-available/sonarqube.conf
 
 
-```cnf
+```conf
 server {
 
     listen 80;
