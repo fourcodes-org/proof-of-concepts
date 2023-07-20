@@ -1,5 +1,0 @@
----
-- name: install terraform
-  hosts: master
-  roles:
-    - { role: terraform, terraform_version: 0.11.11 }
