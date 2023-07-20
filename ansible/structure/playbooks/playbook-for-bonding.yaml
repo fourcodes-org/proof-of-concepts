@@ -3,4 +3,4 @@
   hosts: master
   tasks:
   roles:
-  - { role: bonding }
+  - role: ansible-role-for-bonding

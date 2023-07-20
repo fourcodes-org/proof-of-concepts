@@ -1,6 +1,0 @@
----
-ansible_package: ansible
-ansible_directory: ''                # /mnt/ansible
-retry_files_enabled: ''              # False
-ansible_log_file: ''                 # /var/log/ansible.log
-roles_path: ''                       # /home/mike/ansible/roles/

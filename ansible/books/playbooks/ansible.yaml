@@ -1,6 +1,0 @@
----
-- name: Install ansible cfg
-  hosts: node2
-  remote_user: vagrant
-  roles:
-    - role: ansible
