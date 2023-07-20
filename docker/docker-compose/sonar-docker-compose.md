@@ -47,3 +47,7 @@ volumes:
   postgresql_data:
 
 ```
+
+_credentials_
+
+username and password is  `admin`
