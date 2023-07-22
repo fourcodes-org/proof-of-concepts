@@ -157,6 +157,7 @@ git --version
 git clone https://github.com/dodonotdo/demo_testing.git
 cd demo_testing
 npm install
+node index.js
 ```
 **run the above script**
 `bash node.sh`
