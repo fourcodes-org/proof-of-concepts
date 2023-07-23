@@ -1,3 +1,36 @@
+_aws IAM_
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "LambdaFunctionUpdate",
+            "Effect": "Allow",
+            "Action": [
+                "lambda:UpdateFunctionCode",
+                "lambda:PublishVersion",
+                "lambda:GetAlias",
+                "lambda:CreateAlias",
+                "lambda:UpdateAlias",
+                "lambda:ListVersionsByFunction"
+            ],
+            "Resource": [
+                "arn:aws:lambda:ap-southeast-1:YOUR_ACCOUNT_ID:function:function1",
+                "arn:aws:lambda:ap-southeast-1:YOUR_ACCOUNT_ID:function:function2",
+                "arn:aws:lambda:ap-southeast-1:YOUR_ACCOUNT_ID:function:function3",
+                "arn:aws:lambda:ap-southeast-1:YOUR_ACCOUNT_ID:function:function4",
+                "arn:aws:lambda:ap-southeast-1:YOUR_ACCOUNT_ID:function:function5",
+                "arn:aws:lambda:ap-southeast-1:YOUR_ACCOUNT_ID:function:function6",
+                "arn:aws:lambda:ap-southeast-1:YOUR_ACCOUNT_ID:function:function7"
+            ]
+        }
+    ]
+}
+
+
+```
+
 _.gitlab-ci.yml_
 
 ```yml
