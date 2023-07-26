@@ -1,5 +1,5 @@
 
-_encryption key creation_
+_decryption private key creation_
 
 ```bash
  gpg --gen-key
@@ -9,11 +9,22 @@ _encryption key creation_
  gpg --list-keys
  mkdir gpg
  cd gpg/
- gpg --export-secret-keys -a "januo" > januo.asc
- gpg --import januo.asc 
- 2009  gpg --recipient "januo@pm.me" --encrypt demo.txt 
+ gpg --export-secret-keys -a "januo" > januo-private-key.asc
+ gpg --import januo-private-key.asc
+ gpg --recipient "januo@pm.me" --encrypt demo.txt 
+```
+
+_encryption public key creation_
+
+```py
+gpg --list-keys
+gpg --armor --export 9A35AFFC9C70CB43D160343C37A89C98857A7D57 > januo-public-key.asc
 
 ```
+
+_lambda code_
+
+
 ```py
 import json
 import gnupg

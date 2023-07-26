@@ -1,6 +1,6 @@
 
-email address => jinojoe@gmail.com
+email address => januo@pm.me
 
-path location => SFTP/IN/jinojoe/A_B/test_uat.pdf.gpg
+path location => SFTP/IN/januo/A_B/correct-file.txt.gpg
 
-agent_name = jinojoe
+agent_name = januo
