@@ -1,5 +1,19 @@
 
+_encryption key creation_
 
+```bash
+ gpg --gen-key
+    # username januo
+    # email address januo@pm.me
+ gpg --list-secret-keys --keyid-format=long
+ gpg --list-keys
+ mkdir gpg
+ cd gpg/
+ gpg --export-secret-keys -a "januo" > januo.asc
+ gpg --import januo.asc 
+ 2009  gpg --recipient "januo@pm.me" --encrypt demo.txt 
+
+```
 ```py
 import json
 import gnupg
