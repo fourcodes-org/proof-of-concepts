@@ -31,6 +31,84 @@ Additionally, ensure to provide the following information to the concerned party
 2. Username Details: [insert username details here]
 
 
+Title: Decryption and Encryption Private/Public Key Creation
+
+1. Decryption Private Key Creation
+
+To create a private key for decryption, follow these steps:
+
+Step 1: Generate the Key Pair
+```bash
+gpg --gen-key
+```
+Follow the prompts and enter the required information when prompted. For example:
+```
+# Username: januo
+# Email address: januo@pm.me
+```
+
+Step 2: List Secret Keys (optional)
+```bash
+gpg --list-secret-keys --keyid-format=long
+```
+This step lists the generated secret keys. You can skip this step if not required.
+
+Step 3: List Public Keys (optional)
+```bash
+gpg --list-keys
+```
+This step lists the generated public keys. You can skip this step if not required.
+
+Step 4: Create a Directory
+```bash
+mkdir gpg
+cd gpg/
+```
+Navigate to the 'gpg' directory where we will store the private key file.
+
+Step 5: Export the Private Key
+```bash
+gpg --export-secret-keys -a "januo" > januo-private-key.asc
+```
+This exports the private key and saves it in 'januo-private-key.asc' file within the 'gpg' directory.
+
+Step 6: Import the Private Key (if required)
+```bash
+gpg --import januo-private-key.asc
+```
+If needed on another system, you can import the private key using this command.
+
+Step 7: Encrypt a File
+```bash
+gpg --recipient "januo@pm.me" --encrypt demo.txt
+```
+This command encrypts the 'demo.txt' file using the public key associated with the email address "januo@pm.me". Replace "demo.txt" with the name of the file you want to encrypt.
+
+2. Encryption Public Key Creation
+
+To create a public key for encryption, follow these steps:
+
+Step 1: List Public Keys
+```bash
+gpg --list-keys
+```
+This lists the available public keys.
+
+Step 2: Export the Public Key
+```bash
+gpg --armor --export 9A35AFFC9C70CB43D160343C37A89C98857A7D57 > januo-public-key.asc
+```
+This exports the public key associated with the specified key ID and saves it in 'januo-public-key.asc' file.
+
+Please note that the security and proper management of private keys are crucial for maintaining data confidentiality. Ensure you protect your private keys with strong passwords and make regular backups.
+
+**Document Summary:** This document outlines the steps to create decryption and encryption key pairs using GPG (GNU Privacy Guard). It provides clear instructions for key generation, export/import, and file encryption using the generated keys. Additionally, it emphasizes the importance of securely managing private keys to maintain data integrity and confidentiality.
+
+
+
+
+
+
 _decryption private key creation_
 
 ```bash
