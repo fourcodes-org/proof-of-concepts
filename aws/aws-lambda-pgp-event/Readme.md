@@ -1,4 +1,36 @@
 
+Create the SFTP private key on one of the Linux machines using the following command to generate the keys:
+
+```bash
+ssh-keygen -f sftp-server-key
+```
+
+Once the key generation process is complete, the file will be generated in the specified location. Alternatively, you can search for it using the name "sftp-server-key." Copy the contents of the "sftp-server-key.pub" file and paste it into the server's authorized keys location.
+
+Note: When creating an SSH key, refrain from setting any passwords for those keys.
+
+Convert the private key file to RSA format before copying it. By default, the private key file is in the OpenSSH format, and it needs to be modified to PEM format. Utilize the following command to convert it:
+
+```bash
+ssh-keygen -p -m PEM -f sftp-server-key
+```
+
+This command will overwrite the file in the same location, so ensure that the keys are updated with the latest timestamp. If the key is already in the RSA format, avoid performing any conversion.
+
+Next, convert the key into a base64-encoded format for storage in the secret manager. Execute the following command to convert the content from the private key file, giving it a different name:
+
+```bash
+base64 -w 0 < sftp-server-key > sftp-server-key-base64
+```
+
+Save the file and provide it to the person responsible for handling the secret manager. They will then be able to share the credentials.
+
+Additionally, ensure to provide the following information to the concerned party:
+
+1. SFTP Server Hostname: [insert hostname here]
+2. Username Details: [insert username details here]
+
+
 _decryption private key creation_
 
 ```bash
