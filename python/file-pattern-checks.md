@@ -1,6 +1,26 @@
 
 _python_
 
+
+```py
+import re
+
+class PatternChecks:
+    def __init__(self, file_path):
+        self.pattern = r'A_B/|A_BC/|A_C/|A/|B_C/|B_CD/|B_D/|B/|C/|C_B/|C_BA/|D_B/|C/'
+        self.file_path = file_path
+
+    def check_key_matching_patterns(self):
+        compiled_pattern = re.compile(self.pattern.replace("/", r"\/").replace("_", r"\w+"))
+        match = compiled_pattern.search(self.file_path)
+        if match:
+            return match.group().replace("/", "")
+        return False
+
+pt = PatternChecks("path/demo.txt")
+print(pt.check_key_matching_patterns())
+```
+
 ```py
 import re
 
