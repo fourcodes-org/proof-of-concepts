@@ -1,5 +1,7 @@
 add the part under the daemon.json file
 
+`C:\ProgramData\docker\config`
+
 ```json
 {
     "allow-nondistributable-artifacts": [
