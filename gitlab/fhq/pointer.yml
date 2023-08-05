@@ -1,0 +1,531 @@
+---
+start:
+  rules:
+    - !reference [.sit_rules, rules]
+  extends: .msg-debug
+  stage: start
+  variables:
+    MESSAGE: "CURRENT RELEASE VERSION IS => ${CURRENT_RELEASE_VERSION}"
+  when: manual
+
+checksum-validation:
+  rules:
+    - !reference [.sit_rules, rules]
+  stage: sast
+  tags:
+    - sit-bca-remote-runner
+  script:
+    - eval "$(jq -r 'to_entries | .[] | .key |= gsub("-"; "_") | "export \(.key)=\(.value)"' hash.json)"
+    - mkdir -p artifacts
+    - aws s3 cp "s3://${BUCKET_NAME}/${VERSION}/${FHQ_API_NAME}" artifacts
+    - >
+      [ "$(sha256sum "artifacts/${FHQ_API_NAME}" | awk '{print $1}')" = "${FHQ_API_CHEKSUM256}" ] && echo "Checksum validation successful. File integrity is intact." || { echo "Checksum validation failed. The file may be corrupted or modified."; exit 1; }
+    - PRESIGN_URL_FOR_API=$(aws s3 presign s3://${BUCKET_NAME}/${VERSION}/${FHQ_API_NAME} --expires-in 3600)
+    - echo "PRESIGN_URL_FOR_API=${PRESIGN_URL_FOR_API}" >> build.env
+
+    - aws s3 cp "s3://${BUCKET_NAME}/${VERSION}/${FHQ_UI_NAME}" artifacts
+    - >
+      [ "$(sha256sum "artifacts/${FHQ_UI_NAME}" | awk '{print $1}')" = "${FHQ_UI_CHEKSUM256}" ] && echo "Checksum validation successful. File integrity is intact." || { echo "Checksum validation failed. The file may be corrupted or modified."; exit 1; }
+    - PRESIGN_URL_FOR_UI=$(aws s3 presign s3://${BUCKET_NAME}/${VERSION}/${FHQ_UI_NAME} --expires-in 3600)
+    - echo "PRESIGN_URL_FOR_UI=${PRESIGN_URL_FOR_UI}" >> build.env
+
+    - aws s3 cp "s3://${BUCKET_NAME}/${VERSION}/${FHQ_GENIE_NAME}" artifacts
+    - >
+      [ "$(sha256sum "artifacts/${FHQ_GENIE_NAME}" | awk '{print $1}')" = "${FHQ_GENIE_CHEKSUM256}" ] && echo "Checksum validation successful. File integrity is intact." || { echo "Checksum validation failed. The file may be corrupted or modified."; exit 1; }
+    - PRESIGN_URL_FOR_GENIE=$(aws s3 presign s3://${BUCKET_NAME}/${VERSION}/${FHQ_GENIE_NAME} --expires-in 3600)
+    - echo "PRESIGN_URL_FOR_GENIE=${PRESIGN_URL_FOR_GENIE}" >> build.env
+
+    - aws s3 cp "s3://${BUCKET_NAME}/${VERSION}/${FHQ_GENIE_COMPACT_NAME}" artifacts
+    - >
+      [ "$(sha256sum "artifacts/${FHQ_GENIE_COMPACT_NAME}" | awk '{print $1}')" = "${FHQ_GENIE_COMPACT_CHEKSUM256}" ] && echo "Checksum validation successful. File integrity is intact." || { echo "Checksum validation failed. The file may be corrupted or modified."; exit 1; }
+    - PRESIGN_URL_FOR_GENIE_COMPACT=$(aws s3 presign s3://${BUCKET_NAME}/${VERSION}/${FHQ_GENIE_COMPACT_NAME} --expires-in 3600)
+    - echo "PRESIGN_URL_FOR_GENIE_COMPACT=${PRESIGN_URL_FOR_GENIE_COMPACT}" >> build.env
+
+    - unset VERSION FHQ_API_NAME FHQ_API_CHEKSUM256 FHQ_UI_NAME FHQ_UI_CHEKSUM256 FHQ_CX_AGENT_NAME FHQ_CX_AGENT_CHEKSUM256
+    - JSON_DATA=$(cat hash.json)
+    - echo "$JSON_DATA" | jq -r 'to_entries[] | .key |= gsub("_"; "_") | "\(.key)=\(.value)"' >> build.env
+    - rm -rf artifacts
+  needs:
+    - start
+  allow_failure: false
+  artifacts:
+    reports:
+      dotenv: build.env
+
+semgrep-sast:
+  rules:
+    - !reference [.sit_rules, rules]
+  stage: sast
+  before_script:
+    - mkdir -p artifacts
+    # - wget -q -O "artifacts/${FHQ_API_NAME}" "${PRESIGN_URL_FOR_API}"
+    # - wget -q -O "artifacts/${FHQ_UI_NAME}" "${PRESIGN_URL_FOR_UI}"
+    # - wget -q -O "artifacts/${FHQ_GENIE_NAME}" "${PRESIGN_URL_FOR_GENIE}"
+    # - wget -q -O "artifacts/${FHQ_GENIE_COMPACT_NAME}" "${PRESIGN_URL_FOR_GENIE_COMPACT}"
+    # - unzip -q "artifacts/${FHQ_API_NAME}" -d artifacts
+    # - unzip -q "artifacts/${FHQ_UI_NAME}" -d artifacts
+    # - unzip -q "artifacts/${FHQ_GENIE_NAME}" -d artifacts
+    # - unzip -q "artifacts/${FHQ_GENIE_COMPACT_NAME}" -d artifacts
+  needs:
+    - job: checksum-validation
+      artifacts: true
+
+secret_detection:
+  stage: secret-detection
+  rules:
+    - !reference [.sit_rules, rules]
+  before_script:
+    - mkdir -p artifacts
+    # - wget -q -O "artifacts/${FHQ_API_NAME}" "${PRESIGN_URL_FOR_API}"
+    # - wget -q -O "artifacts/${FHQ_UI_NAME}" "${PRESIGN_URL_FOR_UI}"
+    # - wget -q -O "artifacts/${FHQ_GENIE_NAME}" "${PRESIGN_URL_FOR_GENIE}"
+    # - wget -q -O "artifacts/${FHQ_GENIE_COMPACT_NAME}" "${PRESIGN_URL_FOR_GENIE_COMPACT}"
+    # - unzip -q "artifacts/${FHQ_API_NAME}" -d artifacts
+    # - unzip -q "artifacts/${FHQ_UI_NAME}" -d artifacts
+    # - unzip -q "artifacts/${FHQ_GENIE_NAME}" -d artifacts
+    # - unzip -q "artifacts/${FHQ_GENIE_COMPACT_NAME}" -d artifacts
+  needs:
+    - job: checksum-validation
+      artifacts: true
+
+linux-api-build:
+  tags:
+    - sit-bca-remote-runner
+  rules:
+    - !reference [.sit_rules, rules]
+  extends: .aws-ecr-build-and-push
+  stage: build
+  variables:
+    AWS_DEFAULT_REGION: "ap-southeast-1"
+    ECR_REPO_NAME: "${API_SIT_AWS_ECR_NAME}"
+    VERSION: "version-${CURRENT_RELEASE_VERSION}"
+  before_script:
+    - mkdir artifacts
+    - wget -q -O "artifacts/${FHQ_API_NAME}" "${PRESIGN_URL_FOR_API}"
+    - unzip -q "artifacts/${FHQ_API_NAME}" -d artifacts
+    - ACTUAL_FILE_NAME="${FHQ_API_NAME}"
+    - API_NAME="${ACTUAL_FILE_NAME%.zip}"
+  needs:
+    - job: checksum-validation
+      artifacts: true
+    - job: secret_detection
+      artifacts: false
+    - job: semgrep-sast
+      artifacts: false
+
+linux-ui-build:
+  tags:
+    - sit-bca-remote-runner
+  rules:
+    - !reference [.sit_rules, rules]
+  extends: .aws-ecr-build-and-push
+  stage: build
+  variables:
+    AWS_DEFAULT_REGION: "ap-southeast-1"
+    ECR_REPO_NAME: "${UI_SIT_AWS_ECR_NAME}"
+    VERSION: "version-${CURRENT_RELEASE_VERSION}"
+  before_script:
+    - mkdir artifacts
+    - wget -q -O "artifacts/${FHQ_UI_NAME}" "${PRESIGN_URL_FOR_UI}"
+    - unzip -q "artifacts/${FHQ_UI_NAME}" -d artifacts
+    - ACTUAL_FILE_NAME="${FHQ_UI_NAME}"
+    - API_NAME="${ACTUAL_FILE_NAME%.zip}"
+  needs:
+    - job: checksum-validation
+      artifacts: true
+    - job: secret_detection
+      artifacts: false
+    - job: semgrep-sast
+      artifacts: false
+
+linux-agent-build:
+  tags:
+    - sit-bca-remote-runner
+  rules:
+    - !reference [.sit_rules, rules]
+  extends: .aws-ecr-build-and-push
+  stage: build
+  variables:
+    AWS_DEFAULT_REGION: "ap-southeast-1"
+    ECR_REPO_NAME: "${CX_AGENT_SIT_AWS_ECR_NAME}"
+    VERSION: "version-${CURRENT_RELEASE_VERSION}"
+  before_script:
+    - API_NAME="cx-agent"
+    - mkdir artifacts
+    - mv "${API_NAME}" artifacts/
+    - ls -la artifacts/
+  needs:
+    - job: checksum-validation
+      artifacts: true
+    - job: secret_detection
+      artifacts: false
+    - job: semgrep-sast
+      artifacts: false
+
+windows-dependencies-download:
+  stage: build
+  rules:
+    - !reference [.sit_rules, rules]
+  script:
+    - wget -q -O vc_redist.x86.exe "https://aka.ms/vs/17/release/vc_redist.x86.exe"
+  artifacts:
+    paths:
+      - vc_redist.x86.exe
+  needs:
+    - job: secret_detection
+      artifacts: false
+    - job: semgrep-sast
+      artifacts: false
+
+windows-genie-build:
+  stage: build
+  extends: .windows-docker-build
+  tags:
+  -  sit-windows-bca-remote-runner 
+  rules:
+    - !reference [.sit_rules, rules]
+  variables:
+    ECR_REPO_NAME: ${GENIE_SIT_AWS_ECR_NAME}
+    VERSION: "version-${CURRENT_RELEASE_VERSION}"
+  before_script:
+    - $jsonContent = Get-Content -Raw -Path "hash.json"
+    - $envVariables = ConvertFrom-Json $jsonContent
+    - >
+      foreach ($envVar in $envVariables.PSObject.Properties) {
+          [Environment]::SetEnvironmentVariable($envVar.Name, $envVar.Value)
+      }
+    - aws s3 cp  "s3://$env:BUCKET_NAME/$env:VERSION/$env:FHQ_GENIE_NAME" $env:FHQ_GENIE_NAME
+    - $ARTIFACT_BUCKET_NAME = $env:BUCKET_NAME
+    - $SOURCE_ZIP = $env:FHQ_GENIE_NAME
+    - $DESTINATION_FOLDER = $PWD.Path
+    - Expand-Archive -Path $SOURCE_ZIP -DestinationPath $DESTINATION_FOLDER
+    - $ACTUAL_FILE_NAME = $env:FHQ_GENIE_NAME
+    - $API_NAME = $ACTUAL_FILE_NAME -replace '\.zip$', ''
+    - $OUTPUT_IMAGE_ARTEFACT = "$API_NAME.tar"
+  needs:
+    - job: windows-dependencies-download
+      artifacts: true
+
+windows-genie-campact-build:
+  stage: build
+  extends: .windows-docker-build
+  tags:
+  -  sit-windows-bca-remote-runner 
+  rules:
+    - !reference [.sit_rules, rules]
+  variables:
+    ECR_REPO_NAME: ${GENIE_COMPACT_SIT_AWS_ECR_NAME}
+    VERSION: "version-${CURRENT_RELEASE_VERSION}"
+  before_script:
+    - $jsonContent = Get-Content -Raw -Path "hash.json"
+    - $envVariables = ConvertFrom-Json $jsonContent
+    - >
+      foreach ($envVar in $envVariables.PSObject.Properties) {
+          [Environment]::SetEnvironmentVariable($envVar.Name, $envVar.Value)
+      }
+    - aws s3 cp  "s3://$env:BUCKET_NAME/$env:VERSION/$env:FHQ_GENIE_COMPACT_NAME" $env:FHQ_GENIE_COMPACT_NAME
+    - $ARTIFACT_BUCKET_NAME = $env:BUCKET_NAME
+    - $SOURCE_ZIP = $env:FHQ_GENIE_COMPACT_NAME
+    - $DESTINATION_FOLDER = $PWD.Path
+    - Expand-Archive -Path $SOURCE_ZIP -DestinationPath $DESTINATION_FOLDER
+    - $ACTUAL_FILE_NAME = $env:FHQ_GENIE_COMPACT_NAME
+    - $API_NAME = $ACTUAL_FILE_NAME -replace '\.zip$', ''
+    - $OUTPUT_IMAGE_ARTEFACT = "$API_NAME.tar"
+  needs:
+    - job: windows-dependencies-download
+      artifacts: true
+
+approval:
+  stage: approval
+  rules:
+    - !reference [.sit_rules, rules]
+  script:
+    - >
+      if [ -z "$APPROVER_NAME" ]; then
+        echo "Stop message: Environment variable APPROVER_NAME is not set or is empty."
+        exit 1
+      fi
+    - echo "THE APPROVER_NAME IS ${APPROVER_NAME}"
+  when: manual
+  allow_failure: false
+  needs:
+    - linux-api-build
+    - linux-ui-build
+    - linux-agent-build
+    - windows-genie-build
+    - windows-genie-campact-build
+
+db-migrator:
+  stage: db-migrator
+  rules:
+    - !reference [.sit_rules, rules]
+  script:
+    - >
+      if [ -z "$DB_MIGRATION_REQUIRED" ]; then
+        echo "Stop message: Environment variable DB_MIGRATION_REQUIRED is not set or is empty."
+        exit 1
+      fi
+    - >
+      if [[ "$DB_MIGRATION_REQUIRED" = "yes" || "$DB_MIGRATION_REQUIRED" = "YES" ]]; then
+        echo "APPS_DB_MIGRATION_REQUIRED=yes" >> build.env
+      else
+        echo "APPS_DB_MIGRATION_REQUIRED=no" >> build.env
+      fi
+  artifacts:
+    reports:
+      dotenv: build.env
+  when: manual
+  allow_failure: false
+  needs:
+    - approval
+
+stop-ecs-service:
+  rules:
+    - !reference [.sit_rules, rules]
+  extends: .aws-ecs-service-stop
+  stage: maintenance
+  variables:
+    AWS_DEFAULT_REGION: "ap-southeast-1"
+    CX_AGENT_AWS_ECS_SERVICE: "${CX_AGENT_SIT_AWS_ECS_SERVICE}"
+    CX_AGENT_AWS_CLUSTER_NAME: "${CX_AGENT_SIT_AWS_ECS_CLUSTER_NAME}"
+    GENIE_AWS_ECS_SERVICE: "${GENIE_SIT_AWS_ECS_SERVICE}"
+    GENIE_AWS_CLUSTER_NAME: "${GENIE_SIT_AWS_ECS_CLUSTER_NAME}"
+    GENIE_COMPACT_AWS_ECS_SERVICE: "${GENIE_COMPACT_SIT_AWS_ECS_SERVICE}"
+    GENIE_COMPACT_AWS_CLUSTER_NAME: "${GENIE_COMPACT_SIT_AWS_ECS_CLUSTER_NAME}"
+    UI_AWS_ECS_SERVICE: "${UI_SIT_AWS_ECS_SERVICE}"
+    UI_AWS_CLUSTER_NAME: "${UI_SIT_AWS_ECS_CLUSTER_NAME}"
+    API_AWS_ECS_SERVICE: "${API_SIT_AWS_ECS_SERVICE}"
+    API_AWS_CLUSTER_NAME: "${API_SIT_AWS_ECS_CLUSTER_NAME}"
+  needs:
+    - job: db-migrator
+      artifacts: true
+
+start-maintanace-page-display:
+  rules:
+    - !reference [.sit_rules, rules]
+  extends: .msg-debug
+  stage: maintenance
+  variables:
+    MESSAGE: "${API_SIT_AWS_ECS_CLUSTER_NAME}"
+  needs:
+    - job: db-migrator
+      artifacts: true
+    - job: stop-ecs-service
+      artifacts: false
+
+linux-api-deploy:
+  tags:
+    - sit-bca-remote-runner
+  rules:
+    - !reference [.sit_rules, rules]
+  extends: .aws-ecs-deploy
+  stage: deploy
+  variables:
+    AWS_DEFAULT_REGION: "ap-southeast-1"
+    DESIRE_COUNT: 1
+    VERSION: "version-${CURRENT_RELEASE_VERSION}"
+    AWS_ECS_TASK_DEFINITION_NAME: "${API_SIT_AWS_TASK_DEFINITION_NAME}"
+    AWS_ECS_SERVICE: "${API_SIT_AWS_ECS_SERVICE}"
+    AWS_CLUSTER_NAME: "${API_SIT_AWS_ECS_CLUSTER_NAME}"
+    AWS_ECR_NAME: "${API_SIT_AWS_ECR_NAME}"
+  needs:
+    - start-maintanace-page-display
+    - db-migrator
+
+linux-ui-deploy:
+  tags:
+    - sit-bca-remote-runner
+  rules:
+    - !reference [.sit_rules, rules]
+  extends: .aws-ecs-deploy
+  stage: deploy
+  variables:
+    AWS_DEFAULT_REGION: "ap-southeast-1"
+    DESIRE_COUNT: 1
+    VERSION: "version-${CURRENT_RELEASE_VERSION}"
+    AWS_ECS_TASK_DEFINITION_NAME: "${UI_SIT_AWS_TASK_DEFINITION_NAME}"
+    AWS_ECS_SERVICE: "${UI_SIT_AWS_ECS_SERVICE}"
+    AWS_CLUSTER_NAME: "${UI_SIT_AWS_ECS_CLUSTER_NAME}"
+    AWS_ECR_NAME: "${UI_SIT_AWS_ECR_NAME}"
+  needs:
+    - start-maintanace-page-display
+    - db-migrator
+
+linux-agent-deploy:
+  rules:
+    - !reference [.sit_rules, rules]
+  extends: .msg-debug
+  stage: deploy
+  variables:
+    MESSAGE: "${CX_AGENT_APP_NAME}"
+  needs:
+    - start-maintanace-page-display
+    - db-migrator
+
+windows-genie-deploy:
+  rules:
+    - !reference [.sit_rules, rules]
+  extends: .msg-debug
+  stage: deploy
+  variables:
+    MESSAGE: "${GENIE_APP_NAME}"
+  needs:
+    - start-maintanace-page-display
+    - db-migrator
+
+windows-genie-campact-deploy:
+  rules:
+    - !reference [.sit_rules, rules]
+  extends: .msg-debug
+  stage: deploy
+  variables:
+    MESSAGE: "${GENIE_COMPACT_APP_NAME}"
+  needs:
+    - start-maintanace-page-display
+    - db-migrator
+
+start-ecs-service:
+  rules:
+    - !reference [.sit_rules, rules]
+  extends: .aws-ecs-service-start
+  stage: stop-maintenance
+  variables:
+    AWS_DEFAULT_REGION: "${REGION}"
+    CX_AGENT_DESIRE_COUNT: 2
+    CX_AGENT_AWS_ECS_SERVICE: "${CX_AGENT_SIT_AWS_ECS_SERVICE}"
+    CX_AGENT_AWS_CLUSTER_NAME: "${CX_AGENT_SIT_AWS_ECS_CLUSTER_NAME}"
+    GENIE_DESIRE_COUNT: 2
+    GENIE_AWS_ECS_SERVICE: "${GENIE_SIT_AWS_ECS_SERVICE}"
+    GENIE_AWS_CLUSTER_NAME: "${GENIE_SIT_AWS_ECS_CLUSTER_NAME}"
+    GENIE_COMPACT_DESIRE_COUNT: 2
+    GENIE_COMPACT_AWS_ECS_SERVICE: "${GENIE_COMPACT_SIT_AWS_ECS_SERVICE}"
+    GENIE_COMPACT_AWS_CLUSTER_NAME: "${GENIE_COMPACT_SIT_AWS_ECS_CLUSTER_NAME}"
+    UI_DESIRE_COUNT: 2
+    UI_AWS_ECS_SERVICE: "${UI_SIT_AWS_ECS_SERVICE}"
+    UI_AWS_CLUSTER_NAME: "${UI_SIT_AWS_ECS_CLUSTER_NAME}"
+    API_AWS_ECS_SERVICE: "${API_SIT_AWS_ECS_SERVICE}"
+    API_DESIRE_COUNT: 2
+    API_AWS_CLUSTER_NAME: "${API_SIT_AWS_ECS_CLUSTER_NAME}"
+  needs:
+    - linux-api-deploy
+    - linux-ui-deploy
+    - linux-agent-deploy
+    - windows-genie-deploy
+    - windows-genie-campact-deploy
+    - db-migrator
+
+
+stop-maintanace-page-display:
+  rules:
+    - !reference [.sit_rules, rules]
+  extends: .msg-debug
+  stage: stop-maintenance
+  variables:
+    MESSAGE: "${API_SIT_AWS_ECS_CLUSTER_NAME}"
+  needs:
+    - job: db-migrator
+      artifacts: true
+    - job: start-ecs-service
+      artifacts: false
+
+test:
+  rules:
+    - !reference [.sit_rules, rules]
+  extends: .msg-debug
+  stage: test
+  variables:
+    MESSAGE: "test"
+  needs:
+    - stop-maintanace-page-display
+
+dast:
+  rules:
+    - !reference [.sit_rules, rules]
+  extends: .msg-debug
+  stage: dasts
+  variables:
+    MESSAGE: "test"
+  needs:
+    - test
+
+rollback-approve-validation:
+  rules:
+    - !reference [.sit_rules, rules]
+  stage: rollback
+  script:
+    - >
+      if [ -z "$ROLLBACK_APPROVER_NAME" ]; then
+        echo "Stop message: Environment variable ROLLBACK_APPROVER_NAME is not set or is empty."
+        exit 1
+      fi
+    - echo "THE ROLLBACK_APPROVER_NAME IS ${ROLLBACK_APPROVER_NAME}"
+  needs:
+    - dast
+  when: manual
+  allow_failure: false
+
+rollback-linux-api-deploy:
+  tags:
+    - sit-bca-remote-runner
+  rules:
+    - !reference [.sit_rules, rules]
+  extends: .aws-ecs-deploy
+  stage: rollback
+  variables:
+    AWS_DEFAULT_REGION: "ap-southeast-1"
+    DESIRE_COUNT: 1
+    VERSION: "version-${EXISTING_RELEASE_VERSION}"
+    AWS_ECS_TASK_DEFINITION_NAME: "${API_SIT_AWS_TASK_DEFINITION_NAME}"
+    AWS_ECS_SERVICE: "${API_SIT_AWS_ECS_SERVICE}"
+    AWS_CLUSTER_NAME: "${API_SIT_AWS_ECS_CLUSTER_NAME}"
+    AWS_ECR_NAME: "${API_SIT_AWS_ECR_NAME}"
+  needs:
+    - rollback-approve-validation
+
+rollback-linux-ui-deploy:
+  tags:
+    - sit-bca-remote-runner
+  rules:
+    - !reference [.sit_rules, rules]
+  extends: .aws-ecs-deploy
+  stage: rollback
+  variables:
+    AWS_DEFAULT_REGION: "ap-southeast-1"
+    DESIRE_COUNT: 1
+    VERSION: "version-${EXISTING_RELEASE_VERSION}"
+    AWS_ECS_TASK_DEFINITION_NAME: "${UI_SIT_AWS_TASK_DEFINITION_NAME}"
+    AWS_ECS_SERVICE: "${UI_SIT_AWS_ECS_SERVICE}"
+    AWS_CLUSTER_NAME: "${UI_SIT_AWS_ECS_CLUSTER_NAME}"
+    AWS_ECR_NAME: "${UI_SIT_AWS_ECR_NAME}"
+  needs:
+    - rollback-approve-validation
+
+rollback-linux-agent-deploy:
+  rules:
+    - !reference [.sit_rules, rules]
+  extends: .msg-debug
+  stage: rollback
+  variables:
+    MESSAGE: "${CX_AGENT_APP_NAME}"
+  needs:
+    - rollback-approve-validation
+
+rollback-windows-genie-deploy:
+  rules:
+    - !reference [.sit_rules, rules]
+  extends: .msg-debug
+  stage: rollback
+  variables:
+    MESSAGE: "${GENIE_APP_NAME}"
+  needs:
+    - rollback-approve-validation
+
+rollback-windows-genie-campact-deploy:
+  rules:
+    - !reference [.sit_rules, rules]
+  extends: .msg-debug
+  stage: rollback
+  variables:
+    MESSAGE: "${GENIE_COMPACT_APP_NAME}"
+  needs:
+    - rollback-approve-validation
