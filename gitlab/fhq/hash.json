@@ -1,0 +1,12 @@
+{
+  "BUCKET_NAME": "demo-sit-januo",
+  "VERSION": "1.1.0",
+  "FHQ_API_NAME": "fhq-januo-api.zip",
+  "FHQ_API_CHEKSUM256": "46d81e11a5875d76890044905e4264e0b003f7db613ebafd6579858749c7e29a",
+  "FHQ_UI_NAME": "fhq-januo-ui.zip",
+  "FHQ_UI_CHEKSUM256": "63f184bd2fb97961efa9acd34dc03ffedf6d61418c6b40a0fe85f3367217c426",
+  "FHQ_GENIE_NAME": "fhq-januo.zip",
+  "FHQ_GENIE_CHEKSUM256": "40d8a8b85954a817cc38717edc737dffac7f2d085f06b8da449990b7b8b8e8bb",
+  "FHQ_GENIE_COMPACT_NAME": "fhq-januo-compact.zip",
+  "FHQ_GENIE_COMPACT_CHEKSUM256": "947920d29b1f4b037e322a98e2da26caa8ccf69c4553a49d6f28355979a9a3cb"
+}
