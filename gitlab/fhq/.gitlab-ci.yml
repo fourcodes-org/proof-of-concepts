@@ -5,7 +5,7 @@ include:
   - template: Security/SAST.gitlab-ci.yml
   - template: Security/Dependency-Scanning.gitlab-ci.yml
 
-  - local: deployment-manifest.yml
+  - local: manifest.yml
   - local: reference.yml
   - local: pointer.yml
 
