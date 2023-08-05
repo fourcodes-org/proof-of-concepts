@@ -5,9 +5,11 @@ import json
 import boto3
 
 class InstancesAction:
-    def __init__(self):
+    def __init__(self, debug=False):
         self.client = boto3.client('ec2')
-        # boto3.set_stream_logger(name='botocore')
+        self.debug = debug
+        if self.debug:
+            boto3.set_stream_logger(name='botocore')
         
     def find_instance_id(self):
         response = self.client.describe_instances()
