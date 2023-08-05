@@ -1,0 +1,146 @@
+---
+.msg-debug:
+  variables:
+    GIT_CHECKOUT: "false"
+    MESSAGE: ""
+  image:
+    name: alpine:latest
+    entrypoint: [""]
+  script:
+    - echo "${MESSAGE}"
+
+.aws-ecs-deploy:
+  variables:
+    GIT_CHECKOUT: "false"
+    AWS_DEFAULT_REGION: ""
+    DESIRE_COUNT: "1"
+    VERSION: ""
+    AWS_ECS_TASK_DEFINITION_NAME: ""
+    AWS_ECS_SERVICE: ""
+    AWS_CLUSTER_NAME: ""
+    AWS_ECR_NAME: ""
+  script:
+    - ACCOUNT_ID=$(aws sts get-caller-identity --endpoint-url https://sts.${AWS_DEFAULT_REGION}.amazonaws.com --query "Account" --output text)
+    - DOCKER_IMAGE="${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${AWS_ECR_NAME}:${VERSION}"
+    - OLD_TASK_DEF=$(aws ecs --endpoint-url https://ecs.${AWS_DEFAULT_REGION}.amazonaws.com describe-task-definition --task-definition ${AWS_ECS_TASK_DEFINITION_NAME} --output json)
+    - OLD_TASK_DEF_REVISION=$(echo ${OLD_TASK_DEF} | jq ".taskDefinition|.revision")
+    - NEW_TASK_DEF=$(echo ${OLD_TASK_DEF} | jq --arg NDI ${DOCKER_IMAGE} '.taskDefinition.containerDefinitions[0].image=$NDI')
+    - >
+      FINAL_TASK=$(echo ${NEW_TASK_DEF} | jq '.taskDefinition|{networkMode: .networkMode, family: .family, volumes: .volumes, taskRoleArn: .taskRoleArn, executionRoleArn: .executionRoleArn, containerDefinitions: .containerDefinitions, memory: .memory, cpu: .cpu}')
+    - UPDATED_TASK=$(aws ecs --endpoint-url https://ecs.${AWS_DEFAULT_REGION}.amazonaws.com register-task-definition --cli-input-json "$(echo ${FINAL_TASK})")
+    - UPDATED_TASK_DEF_REVISION=$(echo ${UPDATED_TASK} | jq ".taskDefinition|.taskDefinitionArn")
+    - SUCCESS_UPDATE=$(aws ecs --endpoint-url https://ecs.${AWS_DEFAULT_REGION}.amazonaws.com update-service --region ${AWS_DEFAULT_REGION} --desired-count ${DESIRE_COUNT} --service ${AWS_ECS_SERVICE} --task-definition ${AWS_ECS_TASK_DEFINITION_NAME} --cluster ${AWS_CLUSTER_NAME} --force-new-deployment)
+    - >
+      if [[ -n "$SUCCESS_UPDATE" ]]; then
+        echo "ECS service update initiated. Waiting for the service to stabilize..."
+      else
+        echo "Failed to update the ECS service. Check the ECS console for more details."
+        exit 1
+      fi
+    - echo "Waiting"
+    - >
+      while true; do
+        ROLLOUT_STATUS=$(aws ecs describe-services --region ${AWS_DEFAULT_REGION} --cluster ${AWS_CLUSTER_NAME} --services ${AWS_ECS_SERVICE} --query "services[0].deployments[0].rolloutState" --output text)
+        if [ "$ROLLOUT_STATUS" == "COMPLETED" ]; then
+          echo -e "\nECS service deployment was successful."
+          break
+        elif [ "$ROLLOUT_STATUS" == "FAILED" ]; then
+          echo -e "\nECS service deployment encountered an issue and may have been rolled back."
+          echo "Check the ECS console for more details."
+          break
+        else
+          echo -n "#"
+          sleep 10
+        fi
+      done
+
+.aws-ecs-service-stop:
+  variables:
+    GIT_CHECKOUT: "false"
+    AWS_DEFAULT_REGION: ""
+    CX_AGENT_AWS_ECS_SERVICE: ""
+    CX_AGENT_AWS_CLUSTER_NAME: ""
+    GENIE_AWS_ECS_SERVICE: ""
+    GENIE_AWS_CLUSTER_NAME: ""
+    GENIE_COMPACT_AWS_ECS_SERVICE: ""
+    GENIE_COMPACT_AWS_CLUSTER_NAME: ""
+    UI_AWS_ECS_SERVICE: ""
+    UI_AWS_CLUSTER_NAME: ""
+    API_AWS_ECS_SERVICE: ""
+    API_AWS_CLUSTER_NAME: ""
+  script:
+    - >
+      if [[ "$APPS_DB_MIGRATION_REQUIRED" = "yes" || "$APPS_DB_MIGRATION_REQUIRED" = "YES" ]]; then
+        - aws ecs update-service  --region ${AWS_DEFAULT_REGION} --desired-count 0 --cluster ${GENIE_AWS_CLUSTER_NAME} --service ${GENIE_AWS_ECS_SERVICE}
+        - aws ecs update-service  --region ${AWS_DEFAULT_REGION} --desired-count 0 --cluster ${GENIE_COMPACT_AWS_CLUSTER_NAME} --service ${GENIE_COMPACT_AWS_ECS_SERVICE}
+        - aws ecs update-service  --region ${AWS_DEFAULT_REGION} --desired-count 0 --cluster ${CX_AGENT_AWS_CLUSTER_NAME} --service ${CX_AGENT_AWS_ECS_SERVICE}
+        - aws ecs update-service  --region ${AWS_DEFAULT_REGION} --desired-count 0 --cluster ${UI_AWS_CLUSTER_NAME} --service ${UI_AWS_ECS_SERVICE}
+        - aws ecs update-service  --region ${AWS_DEFAULT_REGION} --desired-count 0 --cluster ${API_AWS_CLUSTER_NAME} --service ${API_AWS_ECS_SERVICE}
+      else
+        echo "Maintenance is not required."
+      fi
+
+.aws-ecs-service-start:
+  variables:
+    GIT_CHECKOUT: "false"
+    AWS_DEFAULT_REGION: ""
+    CX_AGENT_DESIRE_COUNT: ""
+    CX_AGENT_AWS_ECS_SERVICE: ""
+    CX_AGENT_AWS_CLUSTER_NAME: ""
+    GENIE_DESIRE_COUNT: ""
+    GENIE_AWS_ECS_SERVICE: ""
+    GENIE_AWS_CLUSTER_NAME: ""
+    GENIE_COMPACT_DESIRE_COUNT: ""
+    GENIE_COMPACT_AWS_ECS_SERVICE: ""
+    GENIE_COMPACT_AWS_CLUSTER_NAME: ""
+    UI_DESIRE_COUNT: ""
+    UI_AWS_ECS_SERVICE: ""
+    UI_AWS_CLUSTER_NAME: ""
+    API_DESIRE_COUNT: ""
+    API_AWS_ECS_SERVICE: ""
+    API_AWS_CLUSTER_NAME: ""
+  script:
+    - >
+      if [[ "$APPS_DB_MIGRATION_REQUIRED" = "yes" || "$APPS_DB_MIGRATION_REQUIRED" = "YES" ]]; then
+        - aws ecs update-service  --region ${AWS_DEFAULT_REGION} --desired-count ${API_DESIRE_COUNT} --cluster ${API_AWS_CLUSTER_NAME} --service ${API_AWS_ECS_SERVICE}
+        - aws ecs update-service  --region ${AWS_DEFAULT_REGION} --desired-count ${UI_DESIRE_COUNT} --cluster ${UI_AWS_CLUSTER_NAME} --service ${UI_AWS_ECS_SERVICE}
+        - aws ecs update-service  --region ${AWS_DEFAULT_REGION} --desired-count ${GENIE_DESIRE_COUNT} --cluster ${GENIE_AWS_CLUSTER_NAME} --service ${GENIE_AWS_ECS_SERVICE}
+        - aws ecs update-service  --region ${AWS_DEFAULT_REGION} --desired-count ${GENIE_COMPACT_DESIRE_COUNT} --cluster ${GENIE_COMPACT_AWS_CLUSTER_NAME} --service ${GENIE_COMPACT_AWS_ECS_SERVICE}
+        - aws ecs update-service  --region ${AWS_DEFAULT_REGION} --desired-count ${CX_AGENT_DESIRE_COUNT} --cluster ${CX_AGENT_AWS_CLUSTER_NAME} --service ${CX_AGENT_AWS_ECS_SERVICE}
+      else
+        echo "Maintenance is not required."
+      fi
+
+.aws-ecr-build-and-push:
+  variables:
+    AWS_DEFAULT_REGION: ""
+    ECR_REPO_NAME: ""
+    VERSION: ""
+  script:
+    - ACCOUNT_ID=$(aws sts get-caller-identity --endpoint-url https://sts.${AWS_DEFAULT_REGION}.amazonaws.com --query "Account" --output text)
+    - aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
+    - docker build --no-cache -t ${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${ECR_REPO_NAME}:${VERSION} artifacts/${API_NAME}
+    - docker push ${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${ECR_REPO_NAME}:${VERSION}
+    - docker rmi -f ${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${ECR_REPO_NAME}:${VERSION}
+
+
+.windows-docker-build:
+  variables:
+    AWS_DEFAULT_REGION: "ap-southeast-1"
+    ECR_REPO_NAME: ""
+    VERSION: ""
+  script:
+  - $ACCOUNT_ID = aws sts get-caller-identity --query "Account" --output text
+  - cd "${API_NAME}" 
+  - docker build --no-cache -t  "${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${ECR_REPO_NAME}:${VERSION}" .
+  - aws ecr get-login-password --region "${AWS_DEFAULT_REGION}" | docker login --username AWS --password-stdin "${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+  - docker push "${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${ECR_REPO_NAME}:${VERSION}"
+  - docker save -o "${OUTPUT_IMAGE_ARTEFACT}" "${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${ECR_REPO_NAME}:${VERSION}"
+  - aws s3 cp "${OUTPUT_IMAGE_ARTEFACT}" "s3://${ARTIFACT_BUCKET_NAME}"
+  - $ARTIFACT_S3_PRESINGED_URL = aws s3 presign "s3://${ARTIFACT_BUCKET_NAME}/${OUTPUT_IMAGE_ARTEFACT}" 2>&1
+  - Remove-Item -Path "${OUTPUT_IMAGE_ARTEFACT}" -Force
+  - echo "S3_PRESINGED_URL=${ARTIFACT_S3_PRESINGED_URL}" >> build.env
+  - docker rmi "${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${ECR_REPO_NAME}:${VERSION}" -f
+  artifacts:
+    reports:
+      dotenv: build.env
