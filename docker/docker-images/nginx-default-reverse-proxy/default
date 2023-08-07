@@ -1,0 +1,12 @@
+server {
+	  listen 80 default_server;
+	  listen [::]:80 default_server;
+    server_name _;
+
+    location / {
+        proxy_pass https://api.github.com/;
+    }
+
+    access_log           /var/log/nginx/access.log;
+    error_log            /var/log/nginx/error.log;
+}
