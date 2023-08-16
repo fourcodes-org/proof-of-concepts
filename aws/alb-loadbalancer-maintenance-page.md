@@ -62,7 +62,7 @@ def lambda_handler(event, context):
         alb.create_rule()
         return {
             'statusCode': 200,
-            'body': json.dumps({
+            'body': dict({
                 'action': 'start maintenance',
                 'state': 'success'
             })
@@ -72,7 +72,7 @@ def lambda_handler(event, context):
         alb.delete_rule()
         return {
             'statusCode': 200,
-            'body': json.dumps({
+            'body': dict({
                 'action': 'stop maintenance',
                 'state': 'success'
             })
@@ -81,7 +81,7 @@ def lambda_handler(event, context):
     else:
         return {
             'statusCode': 400,
-            'body': json.dumps({
+            'body': dict({
                 'error': 'Invalid event_name',
                 'state': 'failed'
             })
