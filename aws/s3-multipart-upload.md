@@ -134,7 +134,7 @@ import math
 
 expire = 100
 key = "demo.exe"
-file_size = os.path.getsize('demo.exe')
+file_size = os.path.getsize(key)
 part_size = 5 * 1024 * 1024
 part_count = math.ceil(file_size / part_size)
 
