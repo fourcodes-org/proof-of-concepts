@@ -53,13 +53,16 @@ def handle_get_request(event):
     expire = data.get('expire')
     key = data.get('key')
     
-    if expire and key:
-        multi_part_upload_process = MultipartUpload(SOURCE_BUCKET_NAME, key, expire)
-        download_url = multi_part_upload_process.download_object_s3_with_help_of_presigned_url()
-        return {'statusCode': 200, 'body': json.dumps({'status': 'OK', 'description': 'The response for the presigned url has been successfully returned.', 'presigned_url': download_url})}
-    else:
-        return {'statusCode': 400, 'body': json.dumps({'status': 'FAILED', 'description': 'The upload part has encountered an error'})}
-
+    try:
+        if expire and key:
+            multi_part_upload_process = MultipartUpload(SOURCE_BUCKET_NAME, key, expire)
+            download_url = multi_part_upload_process.download_object_s3_with_help_of_presigned_url()
+            return {'statusCode': 200, 'body': json.dumps({'status': 'OK', 'description': 'The response for the presigned url has been successfully returned.', 'presigned_url': download_url})}
+        else:
+            return {'statusCode': 400, 'body': json.dumps({'status': 'FAILED', 'description': 'Bad Request' })}
+    except:
+        return {'statusCode': 400, 'body': json.dumps({'status': 'FAILED', 'description': 'Bad Request'})}
+        
 def handle_post_request(event):
     data = json.loads(event['body'])
     key = data.get('key')
@@ -95,7 +98,7 @@ def handle_post_request(event):
                 else:
                     return {'statusCode': 400, 'body': json.dumps({'status': 'FAILED', 'description': 'The comtplete multi part process has encountered an error.'})}
             except:
-                return {'statusCode': 400, 'body': json.dumps({'status': 'FAILED', 'description': 'NoSuchUpload.'})}
+                return {'statusCode': 400, 'body': json.dumps({'status': 'FAILED', 'description': 'NoSuchCompleteMultiPartUpload.'})}
 
         elif method == "abort_multipart_upload":
             try:
@@ -119,7 +122,6 @@ def lambda_handler(event, context):
         return handle_post_request(event)
     else:
         return {'statusCode': 400, 'body': json.dumps({'status': 'FAILED', 'description': 'Bad Request'})}
-
 ```
 
 _test plan_
