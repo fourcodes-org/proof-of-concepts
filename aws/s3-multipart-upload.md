@@ -56,9 +56,9 @@ def handle_get_request(event):
     if expire and key:
         multi_part_upload_process = MultipartUpload(SOURCE_BUCKET_NAME, key, expire)
         download_url = multi_part_upload_process.download_object_s3_with_help_of_presigned_url()
-        return {'statusCode': 200, 'body': download_url}
+        return {'statusCode': 200, 'body': json.dumps({'status': 'OK', 'description': 'The response for the presigned url has been successfully returned.', 'presigned_url': download_url})}
     else:
-        return {'statusCode': 400, 'body': "bad request"}
+        return {'statusCode': 400, 'body': json.dumps({'status': 'FAILED', 'description': 'The upload part has encountered an error'})}
 
 def handle_post_request(event):
     data = json.loads(event['body'])
