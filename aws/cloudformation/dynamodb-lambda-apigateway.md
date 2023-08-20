@@ -1,19 +1,30 @@
 
 
 ```yml
+---
 Parameters:
   dynamoDbName:
     Type: String
-    Default: "users"
+    Default: users
   lambdRoleName:
     Type: String
-    Default: "users"
+    Default: users
   lambdaFunctionName:
     Type: String
-    Default: "users"
+    Default: users
   ApiGatewayName:
     Type: String
-    Default: "users"
+    Default: users
+  IamUser:
+    Type: String
+    Default: smtpuser
+  IamAccessKeyVersion:
+    Type: Number
+    Default: 1
+    MinValue: 1
+  SesRegion:
+    Type: String
+    Default: us-east-1
 
 Resources:
   DynamodbCreation:
@@ -200,7 +211,49 @@ Resources:
       Principal: "apigateway.amazonaws.com"
       SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiGatewayCreation}/*/*/*"
 
+  SmtpUserGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: SMTPUserGroup
+
+  SmtpUserPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: SMTPUserPolicy
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: ses:SendRawEmail
+            Resource: '*'
+      Groups:
+        - !Ref SmtpUserGroup
+
+  SmtpUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: !Ref IamUser
+      Groups:
+        - !Ref SmtpUserGroup
+
+  SmtpUserAccessKey:
+    Type: AWS::IAM::AccessKey
+    Properties:
+      UserName: !Ref SmtpUser
+
 Outputs:
+  AccessKeyId:
+    Description: IAM User Access Key ID
+    Value: !Ref SmtpUserAccessKey
+    Export:
+      Name: !Sub "${AWS::StackName}-AccessKeyId"
+
+  SecretAccessKey:
+    Description: IAM User Secret Access Key
+    Value: !GetAtt SmtpUserAccessKey.SecretAccessKey
+    Export:
+      Name: !Sub "${AWS::StackName}-SecretAccessKey"
+
   ApiEndpoint:
     Description: Endpoint URL of the API Gateway
     Value: !Sub "https://${ApiGatewayCreation}.execute-api.${AWS::Region}.amazonaws.com/Prod/users"
