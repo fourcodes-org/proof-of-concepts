@@ -191,7 +191,7 @@ Resources:
   ApiGatewayStageCreation:
     Type: AWS::ApiGateway::Stage
     Properties:
-      StageName: Prod
+      StageName: prod
       RestApiId: !Ref ApiGatewayCreation
       DeploymentId: !Ref ApiGatewayDeploymentCreation
       MethodSettings:
