@@ -296,3 +296,42 @@ _validation_
   "dob": "12March2023"
 }
 ```
+
+_perl script_
+
+```pl
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use MIME::Base64;
+use Digest::SHA;
+
+my $secret = 'ENTER YOUR SECRET KEY';
+my $region = "REGION NAME";
+my $params = {
+    'date'      => '11111111',
+    'service'   => 'ses',
+    'message'   => 'SendRawEmail',
+    'terminal'  => 'aws4_request',
+    'version'   => "\x04",
+};
+
+my $digest = makedigest('AWS4'.$secret, $params->{'date'});
+   $digest = makedigest($digest, $region);
+   $digest = makedigest($digest, $params->{'service'});
+   $digest = makedigest($digest, $params->{'terminal'});
+   $digest = makedigest($digest, $params->{'message'});
+printf("%s\n", MIME::Base64::encode_base64(sprintf("%s%s", $params->{'version'}, $digest), ''));
+
+sub makedigest {
+    my $key = shift // return undef;
+    my $msg = shift // return undef;
+    return Digest::SHA::hmac_sha256($msg, $key);
+}
+```
+
+_command_
+```bash
+chmod +x main.pl
+./main.pl
+```
