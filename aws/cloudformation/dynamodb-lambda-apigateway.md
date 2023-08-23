@@ -224,7 +224,7 @@ Resources:
         Version: 2012-10-17
         Statement:
           - Effect: Allow
-            Action: ses:SendRawEmail
+            Action: ["ses:SendEmail", "ses:SendRawEmail"]
             Resource: '*'
       Groups:
         - !Ref SmtpUserGroup
