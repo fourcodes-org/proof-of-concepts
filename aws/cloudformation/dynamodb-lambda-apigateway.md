@@ -256,7 +256,7 @@ Outputs:
 
   ApiEndpoint:
     Description: Endpoint URL of the API Gateway
-    Value: !Sub "https://${ApiGatewayCreation}.execute-api.${AWS::Region}.amazonaws.com/Prod/users"
+    Value: !Sub "https://${ApiGatewayCreation}.execute-api.${AWS::Region}.amazonaws.com/prod/users"
 
 ```
 
