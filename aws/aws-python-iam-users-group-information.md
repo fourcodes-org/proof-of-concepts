@@ -1,4 +1,4 @@
-_aws-python-iam-users-information_
+_aws-python-iam-users-group-information_
 
 ```py
 import boto3
