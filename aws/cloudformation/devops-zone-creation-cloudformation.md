@@ -962,6 +962,14 @@ Resources:
 
 _stack creation_
 
-```ps`
+```ps1
+aws cloudformation create-stack --stack-name bca-mc-uat-devops-setup --template-body file://main.yml --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
+```
+
+_update the stack_
+
+```ps1
 aws cloudformation update-stack --stack-name bca-mc-uat-devops-setup --template-body file://main.yml --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
 ```
+
+
