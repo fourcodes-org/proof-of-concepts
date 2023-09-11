@@ -1,22 +1,21 @@
 Generate SSL/TLS Certificates For AWS vsftpd dev
----
 
-* To enable FTP over TLS, you'll need an SSL/TLS certificate. You can either obtain a certificate from a trusted Certificate Authority (CA) or create a self-signed certificate for testing purposes.
+To enable FTP over TLS, you'll need an SSL/TLS certificate. You can either obtain a certificate from a trusted Certificate Authority (CA) or create a self-signed certificate for testing purposes.
 
-```cmd
+```bash
 sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/vsftpd/ssl/private/vsftpd.pem -out /etc/vsftpd/ssl/private/vsftpd.pem
 ```
 
-_Verify Certificate and Key Files:_
+_Verify Certificate and Key Files_
 
-```cmd
+```bash
 openssl x509 -in /etc/vsftpd/ssl/private/vsftpd.pem -text -noout
 openssl rsa -in /etc/vsftpd/ssl/private/vsftpd.pem -check
 ```
+_configuration changes_
 
-```cnf
-sudo vim /etc/vsftpd.conf
-```
+`sudo vim /etc/vsftpd.conf`
+
 ```cnf
 listen=YES
 listen_ipv6=NO
@@ -59,32 +58,23 @@ pasv_addr_resolve=NO
 #ssl
 # Enable TLS
 ssl_enable=YES
-
 # Path to the SSL certificate and private key
 rsa_cert_file=/etc/vsftpd/ssl/private/vsftpd.pem
 rsa_private_key_file=/etc/vsftpd/ssl/private/vsftpd.pem
-
 # Allow only secure TLS connections
 ssl_tlsv1=YES
 ssl_sslv2=NO
 ssl_sslv3=NO
-
 # Force TLS for data connections
 #require_ssl_reuse=NO
 #require_ssl_cert=NO
-
 # Enable passive mode
 pasv_enable=YES
 pasv_min_port=40000
 pasv_max_port=40100
-
 ```
 
-To check config
-```cmd
-sudo vsftpd /etc/vsftpd.conf
-```
-
+_privilegs assign_
 ```cmd
 chown user:user /etc/vsftpd/ssl/private/vsftpd.pem 
 chmod 600 /etc/vsftpd/ssl/private/vsftpd.pem
@@ -93,17 +83,10 @@ chmod 600 /etc/vsftpd/ssl/private/vsftpd.pem
 sudo systemctl restart vsftpd.service
 ```
 
-**To check Error and log**
+_To check Error and log_
 
 ```cmd
 sudo tail /var/log/vsftpd.log
-```
-```cmd
 sudo journalctl -xe | grep vsftpd
-```
-```cmd
-telnet ip--add 21
-```
-```cmd
-ss -tuln | grep "21"
+nc -vz localhost 21
 ```
