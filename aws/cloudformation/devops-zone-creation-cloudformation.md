@@ -806,7 +806,7 @@ Resources:
           sudo yum install docker -y
           sudo systemctl enable podman
           echo "Register the GitLab Runner"
-          sudo gitlab-runner register --non-interactive --url "${GitLabUrl}" --registration-token "${GitLabLinuxRunnerToken}" --executor "shell" --name "${Environment}-linux-runner"
+          sudo gitlab-runner register --non-interactive --url "${GitLabUrl}" --registration-token "${GitLabLinuxRunnerToken}" --executor "shell" --name "${Environment}-linux-gitlab-remote-runner"
 
   # # Ship-Hats Resources
   # PrivateHostedZoneGitlab: 
