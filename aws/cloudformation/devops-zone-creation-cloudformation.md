@@ -749,8 +749,6 @@ Resources:
       UserData:
         Fn::Base64: !Sub |
           <powershell>
-          mkdir C:\gitlab-runner
-          Invoke-WebRequest -Uri "https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-windows-amd64.exe" -OutFile "C:\gitlab-runner\gitlab-runner.exe"
           $InstallerUrl = "https://www.python.org/ftp/python/3.9.7/python-3.9.7-amd64.exe"
           $InstallerFileName = "python-3.9.7.exe"
           $InstallPath = "C:\Python3.9.7"
@@ -762,6 +760,11 @@ Resources:
           [Environment]::SetEnvironmentVariable("Path", $env:Path, [System.EnvironmentVariableTarget]::Machine)
           python --version
           python -m pip install awscli
+          New-Item -Path 'C:\GitLab-Runner' -ItemType Directory
+          cd 'C:\GitLab-Runner'
+          Invoke-WebRequest -Uri "https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-windows-amd64.exe" -OutFile "gitlab-runner.exe"
+          .\gitlab-runner.exe install
+          .\gitlab-runner.exe start
           </powershell>
 
   LinuxEC2Instance:
