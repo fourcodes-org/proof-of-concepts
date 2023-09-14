@@ -764,8 +764,8 @@ Resources:
           cd 'C:\GitLab-Runner'
           Invoke-WebRequest -Uri "https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-windows-amd64.exe" -OutFile "gitlab-runner.exe"
           .\gitlab-runner.exe install
+          .\gitlab-runner.exe register --non-interactive --url "${GitLabUrl}" --registration-token "${GitLabLinuxRunnerToken}" --executor "shell" --name "${Environment}-windows-gitlab-remote-runner"
           .\gitlab-runner.exe start
-          .\gitlab-runner register --non-interactive --url "${GitLabUrl}" --registration-token "${GitLabLinuxRunnerToken}" --executor "shell" --name "${Environment}-windows-gitlab-remote-runner"
           $gitDownloadUrl = "https://github.com/git-for-windows/git/releases/download/v2.34.0.windows.2/Git-2.34.0.2-64-bit.exe"
           $installationPath = "C:\Program Files\Git"
           $installerPath = "$env:TEMP\GitInstaller.exe"
