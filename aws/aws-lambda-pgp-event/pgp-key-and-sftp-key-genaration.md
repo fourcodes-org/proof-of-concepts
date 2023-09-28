@@ -1,8 +1,6 @@
-# README
+This file provides instructions on generating SFTP and PGP keys and converting them into base64-encoded format for storage in a secret manager. Follow the steps outlined below to ensure the security and proper handling of keys.
 
-This README file provides instructions on generating SFTP and PGP keys and converting them into base64-encoded format for storage in a secret manager. Follow the steps outlined below to ensure the security and proper handling of keys.
-
-## SFTP Private Key Generation and Conversion
+SFTP Private Key Generation and Conversion
 
 1. Create the SFTP private key on a Linux machine using the following command:
    ```
