@@ -40,6 +40,7 @@ cat <<EOF >> /etc/httpd/conf.d/status.conf
     Require local
 </Location>
 EOF
+modprobe drbd
 ```
 
 _prepare the drbd configuration both `node1` and `node2`_
