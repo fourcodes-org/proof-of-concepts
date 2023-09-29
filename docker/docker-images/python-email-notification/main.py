@@ -19,14 +19,18 @@ pipeline_url    = os.environ.get("CI_PIPELINE_URL")
 release_branch  = os.environ.get("CI_COMMIT_REF_NAME")
 release_commit  = os.environ.get("CI_COMMIT_SHORT_SHA")
 release_creator = os.environ.get("GITLAB_USER_NAME")
+receiver_emails = os.environ.get("RECEIVER_EMAILS")
+cc_emails       = os.environ.get("CC_EMAILS")
+
 
 # Email lists
-receiver_emails = ['jinojoe@mail.com']
-cc_emails       = ['jjino@mail.com']
+list_receiver_emails = receiver_emails.split(',')
+list_cc_emails       = cc_emails.split(',')
 
 # Combine receiver and cc emails
-all_recipients = receiver_emails + cc_emails
+all_recipients = list_receiver_emails + list_cc_emails
 
+print(all_recipients)
 # Create the email message
 message = MIMEMultipart()
 message['From'] = sender_email
