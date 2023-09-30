@@ -218,10 +218,12 @@ pcs resource create dbserver ocf:heartbeat:mysql config="/drbd-dbdata/my.cnf" da
 _mysql service validation_
 
 ```bash
-mysql –h 192.168.0.200 –u root –p
-GRANT ALL ON *.* TO 'root'@'%' IDENTIFIED BY 'MyDBpassword';
-FLUSH PRIVILEGES;
+set password = password('1234567890');
 CREATE DATABASE rcmsdata;
+CREATE USER IF NOT EXISTS 'januo'@'%' IDENTIFIED BY '1234567890';
+GRANT ALL ON rcmsdata.* TO 'januo'@'%' IDENTIFIED BY '1234567890';
+FLUSH PRIVILEGES;
+mysql -h 192.168.1.245 -u januo -p
 ```
 
 _**DRBD issue**_
