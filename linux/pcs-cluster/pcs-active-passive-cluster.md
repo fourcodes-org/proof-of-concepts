@@ -211,7 +211,8 @@ _initiate the mysql cluster_
 ```bash
 mysql_install_db --no-defaults --datadir=/drbd-dbdata/data
 chown -R mysql:mysql /drbd-dbdata/
-pcs resource create dbserver ocf:heartbeat:mysql config="/drbd-dbdata/my.cnf" datadir="/drbd-dbdata/data" pid="/var/lib/mysql/mysql.pid" socket="/var/lib/mysql/mysql.sock" user="mysql" group="mysql" additional_parameters="--user=mysql" --group resourcegroup
+pcs resource create dbserver ocf:heartbeat:mysql config="/drbd-dbdata/my.cnf" datadir="/drbd-dbdata/data" pid="/var/lib/mysql/mysql.pid" socket="/var/lib/mysql/mysql.sock" user="mysql" group="mysql" binary=/usr/sbin/mysqld additional_parameters="--user=mysql" --group resourcegroup
+
 ```
 
 _mysql service validation_
