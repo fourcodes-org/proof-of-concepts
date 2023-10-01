@@ -218,6 +218,10 @@ pcs resource create dbserver ocf:heartbeat:mysql config="/drbd-dbdata/my.cnf" da
 _mysql service validation_
 
 ```bash
+cat cat /root/.mysql_secret
+Above, the `cat` command will return the secret for the root user.
+mysql -u root -p
+# This 'set' command will change the root user's password.
 set password = password('1234567890');
 CREATE DATABASE rcmsdata;
 CREATE USER IF NOT EXISTS 'januo'@'%' IDENTIFIED BY '1234567890';
