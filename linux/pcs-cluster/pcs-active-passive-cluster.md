@@ -219,7 +219,7 @@ _mysql service validation_
 
 ```bash
 cat cat /root/.mysql_secret
-Above, the `cat` command will return the secret for the root user.
+# Above, the `cat` command will return the secret for the root user.
 mysql -u root -p
 # This 'set' command will change the root user's password.
 set password = password('1234567890');
