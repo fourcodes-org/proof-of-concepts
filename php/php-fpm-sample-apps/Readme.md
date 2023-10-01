@@ -1,22 +1,10 @@
-start container
-
 ```bash
 docker build -t php-fpm:latest .
 docker-compose --env-file env/.env.dynamic up -d
 ```
-tunning
-
-```bash
-net.nf_conntrack_max = 131072
-net.core.somaxconn = 131072
-kernel.msgmnb = 131072
-kernel.msgmax = 131072
-fs.file-max = 131072
-```
 
 
-variables
-
+### Variables
 - `PHPFPM_CONTAINER_MEM_LIMIT`: sets a memory limit to the php-fpm container. This parameter allows you to see the behavior of the container when memory is allocated in different ways.
 
 - `PM_STRATEGY`: Set the process manager strategy to static, dynamic or ondemand.

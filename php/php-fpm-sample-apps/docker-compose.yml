@@ -52,5 +52,7 @@ services:
       DB_PASSWORD: password@123
       DB_DATABASE: product
 
+
+
 volumes:
   dbdata:
