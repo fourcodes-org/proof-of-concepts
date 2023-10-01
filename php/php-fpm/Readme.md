@@ -2,7 +2,7 @@
 docker-compose --env-file env/env.dynamic up -d
 ```
 
-nano /etc/sysctl.conf
+`vim /etc/sysctl.conf`
 
 ```bash
 net.nf_conntrack_max = 131072
