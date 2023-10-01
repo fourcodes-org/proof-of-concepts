@@ -17,7 +17,7 @@ Modify the default NGINX configuration file based on your PHP-FPM configuration.
 ```conf
 server {
     listen 80;
-    server_name example.com;
+    server_name localhost;
 
     location / {
         root /usr/share/nginx/html;
