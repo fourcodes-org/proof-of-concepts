@@ -43,10 +43,9 @@ phpmyadmin:
  restart: always
  ports:
    - 8082:80
- volumes:
 
-
- dbdata:
+volumes:
+  dbdata:
  ```
  
  ```docker
