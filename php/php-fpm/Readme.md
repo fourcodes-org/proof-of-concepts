@@ -1,3 +1,3 @@
 ```bash
-docker-compose --env-file env/.env.dynamic up -d
+docker-compose --env-file env/env.dynamic up -d
 ```
