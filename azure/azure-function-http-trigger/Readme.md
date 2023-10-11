@@ -1,9 +1,13 @@
 
-_function htpp trigger_
+_function http trigger_
+
+_configuration_
 
 ```cnf
 WEBSITE_RUN_FROM_PACKAGE = 1
 ```
+
+_deployment bash script_
 
 ```bash
 curl -X POST \
