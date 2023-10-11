@@ -66,7 +66,7 @@ def handle_post(req: func.HttpRequest) -> func.HttpResponse:
         return func.HttpResponse("Invalid JSON payload", status_code=400)
 ```
 
-`function.json`
+_function.json_
 
 ```json
 {
