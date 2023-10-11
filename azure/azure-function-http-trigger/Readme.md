@@ -13,7 +13,7 @@ _deployment bash script_
 curl -X POST \
   -H "Authorization: Bearer ACCESS_TOKEN" \
   -H "Content-Type: application/binary" \
-  --data-binary @app.zip\
+  --data-binary @final.zip\
   "https://januo-fn.scm.azurewebsites.net/api/zipdeploy"
 ```
 
