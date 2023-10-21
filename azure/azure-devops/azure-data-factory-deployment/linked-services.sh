@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-ls -la
-
 accessTokenResponse=$(curl -s -X POST -d "grant_type=client_credentials&client_id=${APP_ID}&client_secret=${APP_SECRET}&resource=https://management.azure.com/" https://login.microsoftonline.com/${TENANT_ID}/oauth2/token | jq -r .access_token)
 
 linkedServiceJsonFiles=$(find "${ENVIRONMENT_NAME}/linkedService" -type f)
