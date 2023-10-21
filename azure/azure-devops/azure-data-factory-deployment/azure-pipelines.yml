@@ -1,0 +1,82 @@
+---
+trigger:
+- development
+- main
+- rest-api
+
+resources:
+  - repo: self
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  - name: env
+    value: uat
+
+stages:
+  - stage: "BuildPipeline"
+    displayName: "BuildPipeline"
+    jobs:
+      - job: "buildDeployment"
+        displayName: buildDeployment
+        steps:
+          - bash: |
+              cp -r source dev
+              cp -r source uat
+              mv source prd
+            displayName: Environment Preparation
+          - task: replacetokens@5
+            inputs:
+              targetFiles: 'dev/**/*.json'
+              encoding: 'auto'
+              tokenPattern: 'default'
+              writeBOM: true
+              actionOnMissing: 'warn'
+              keepToken: false
+              actionOnNoFiles: 'continue'
+              enableTransforms: false
+              enableRecursion: true
+              useLegacyPattern: false
+              enableTelemetry: true
+            displayName: 'Replace tokens in the development environment'
+            env:
+              DATABRICKS_URL: $(DEV_DATABRICKS_URL)
+          - task: replacetokens@5
+            inputs:
+              targetFiles: 'uat/**/*.json'
+              encoding: 'auto'
+              tokenPattern: 'default'
+              writeBOM: true
+              actionOnMissing: 'warn'
+              keepToken: false
+              actionOnNoFiles: 'continue'
+              enableTransforms: false
+              enableRecursion: true
+              useLegacyPattern: false
+              enableTelemetry: true
+            displayName: 'Replace tokens in the uat environment'
+            env:
+              DATABRICKS_URL: $(UAT_DATABRICKS_URL)
+          - task: replacetokens@5
+            inputs:
+              targetFiles: 'prd/**/*.json'
+              encoding: 'auto'
+              tokenPattern: 'default'
+              writeBOM: true
+              actionOnMissing: 'warn'
+              keepToken: false
+              actionOnNoFiles: 'continue'
+              enableTransforms: false
+              enableRecursion: true
+              useLegacyPattern: false
+              enableTelemetry: true
+            displayName: 'Replace tokens in the prod environment'
+            env:
+              DATABRICKS_URL: $(PRD_DATABRICKS_URL)
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: "$(system.defaultworkingdirectory)"
+              ArtifactName: "drop"
+              publishLocation: "Container"
+            displayName: Publish Pipeline Artifact
