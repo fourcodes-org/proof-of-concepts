@@ -2,7 +2,6 @@
 trigger:
 - development
 - main
-- rest-api
 
 resources:
   - repo: self
