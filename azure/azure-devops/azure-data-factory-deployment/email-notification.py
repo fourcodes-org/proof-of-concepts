@@ -6,9 +6,9 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 # Email parameters
-smtp_server     = "10.71.32.78"
+smtp_server     = "smtp.gmail.com"
 smtp_port       = 25
-sender_email    = "DWETL_STATUS@ite.edu.sg"
+sender_email    = "smtp@gmail.com"
 env_name        = os.environ.get("RELEASE_ENVIRONMENTNAME") 
 pipeline_name   = os.environ.get("RELEASE_ARTIFACTS__AZUREDATAFACTORY_REPOSITORY_NAME")
 project_name    = os.environ.get("BUILD_PROJECTNAME")
