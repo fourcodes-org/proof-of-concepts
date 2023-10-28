@@ -4,9 +4,10 @@ Sol:
 ----
 
  - When we create a docker container using docker image we must correctly assign the Ports for appropriate actions.
+ - suppose if we are using apache2 or nginx nameservers. we use the below structure.
   ```docker
-  ## suppose if we are using apache2 or nginx nameservers
   sudo docker run -it -d -p (localPort:apachePort) --name (containerName) (imageName)
+
   ex:
   ----
   sudo docker run -it -d -p 8000:80 --name (containerName) (imageName)
