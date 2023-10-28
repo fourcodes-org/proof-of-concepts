@@ -41,4 +41,38 @@ git pull
 
 ![image](https://github.com/januo-org/proof-of-concepts/assets/57703276/84d30e91-e74a-4b0a-ae4c-4df93f955ed9)
 
+# Workflow with Existing Branch Setup
 
+**1. Feature Development:**
+
+- Developers create feature branches from the `develop` branch for their tasks.
+- They commit code changes to their respective feature branches.
+
+**2. Merge to `develop`:**
+
+- Developers create merge requests from their feature branches to the `develop` branch for review and approval.
+- Eric will be the approver for all development merges.
+- Once approved, the changes are merged into the `develop` branch.
+- The Azure build pipeline will be triggered to create artifacts for development deployment.
+
+**3. Deployment to Development Environment:**
+
+- Access the Release deployment pipelines in the navigation pane under "pipelines."
+- Navigate to the Release section and select the specific pipeline.
+- Create a release with the latest artifacts.
+- Conduct comprehensive testing on the `develop` environment.
+
+**4. Merge to `main`:**
+
+- Create a merge request from the `develop` branch to the `main` branch when you are confident that the `develop` branch is ready for production.
+- Developers create merge requests from their `develop` branches to the `main` branch for review and approval.
+- Hui Leng will be the approver for all main merges.
+- Once approved, the changes are merged into the `main` branch.
+- The Azure build pipeline will be triggered to create artifacts for UAT and production deployment.
+
+**5. Deployment to UAT and Production Environments:**
+
+- Access the Release deployment pipelines in the navigation pane under "pipelines."
+- Navigate to the Release section and select the specific pipeline.
+- Create a release with the latest artifacts.
+- Conduct comprehensive testing on the `UAT` environment and approve the production deployment.
