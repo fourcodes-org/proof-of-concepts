@@ -3,7 +3,7 @@
 Sol:
 ----
 
- - When we create a docker container using docker image we must correctly assign the Ports for appropriate actions.
+ - When we create a docker container using docker image we must **correctly assign the Ports for appropriate actions**.
  - suppose if we are using apache2 or nginx nameservers. we use the below structure.
   ```docker
   sudo docker run -it -d -p (localPort:apachePort) --name (containerName) (imageName)
