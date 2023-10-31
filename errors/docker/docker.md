@@ -3,7 +3,7 @@ ERROR 1
 ![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/8bda759d-370e-4a9e-b74a-7a12f43ec0b1)
 ![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/30ae65e1-d72b-4f44-9d7a-e968d3e9a0ce)
 **Solution**
-- We need to verify that it is installed correctly in Docker. if it is **properly not installed** we need to follow the below steps.. if it is **installed properly**. we can go ahead the below after [or] steps
+- We need to verify that the Docker packages properly installed. if it is **properly not installed** we need to follow the below steps.. if it is **installed properly**. we can go ahead the below after [or] steps
 
 ```bash
 # update the OS
