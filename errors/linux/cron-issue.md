@@ -1,4 +1,4 @@
-# ERROR
+# ERROR 1
 - Crontab timezone issue. Need to run a script using cron tab in Indian Standard Time(**IST**). But the server time is **UST**
 
 SOL:
