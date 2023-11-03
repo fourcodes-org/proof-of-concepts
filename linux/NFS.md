@@ -1,4 +1,4 @@
-#  Install NFS Server and Client on Ubuntu 22.04
+#  Install NFS Server and NFS Client using inbuild nfs server
 
 ### Install NFS Kernel Server in Ubuntu
 
@@ -23,22 +23,12 @@ sudo chown -R nobody:nogroup /mnt/nfs_share/
 ```sh
 sudo chmod 777 /mnt/nfs_share/
 ```
-**6. Grant NFS Share Access to Client Systems**
-- You can provide access to a single client, multiple clients, or specify an entire subnet.
-- In this guide, we have allowed an entire subnet to have access to the NFS share.
+6. Grant NFS Share Access to Client Systems
 ```sh
 # sudo vim /etc/exports
 
 /mnt/nfs_share  192.168.43.0/24(rw,sync,no_subtree_check)    # 192.168.43.0/24 - ip address depends on your system networks
 ```
-**_Note :_**
-- Suppose if we provide access to **single client** use this -  `/mnt/nfs_share  client_IP_1 (re,sync,no_subtree_check)`
--  Suppose if we provide access to **multiple client**, specify each client on a separate file
-   ```
-   /mnt/nfs_share  client_IP_1 (re,sync,no_subtree_check)
-   /mnt/nfs_share  client_IP_2 (re,sync,no_subtree_check)
-   ```
-
 7. Export the NFS Share Directory
  ```sh
 sudo exportfs -a
