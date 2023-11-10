@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 
-CLIENT_ID="xxxxx"
-CLIENT_SECRET="xxxxxxx"
-TENANT_ID="xxxxx"
-WORKSPACE_ID="xxxxxxxx"
-PBIX_DATASET_DISPLAY_NAME="demo"
-FILE_NAME="pbix/Audit.pbix"
+# set -xe
+
+# CLIENT_ID=""
+# CLIENT_SECRET=""
+# TENANT_ID=""
+# WORKSPACE_ID=""
+# PBIX_DATASET_DISPLAY_NAME=""
+# FILE_NAME=""
 
 # Function for authenticating and importing a Power BI dataset
-import_powerbi_dataset() {
+import_powerbi_report() {
   local TOKEN_ENDPOINT="https://login.microsoftonline.com/${TENANT_ID}/oauth2/token"
   local SCOPE_RESOURCE_URL="https://analysis.windows.net/powerbi/api"
   local REQUEST_BODY="grant_type=client_credentials"
@@ -22,15 +24,21 @@ import_powerbi_dataset() {
   local DATASET_URL="https://api.powerbi.com/v1.0/myorg/groups/${WORKSPACE_ID}/imports"
   local HTTP_STATUS_CODE
 
-  # Check if the dataset already exists, if yes, delete it
-  local DATASET_ID=$(get_dataset_id "${PBIX_DATASET_DISPLAY_NAME}" "${ACCESS_TOKEN}")
-  if [ -n "${DATASET_ID}" ]; then
-    delete_dataset "${DATASET_ID}" "${ACCESS_TOKEN}"
-    echo "${DATASET_ID} is deleted"
-  fi
+  get_report_name=$(get_report_name "${PBIX_DATASET_DISPLAY_NAME}" "${ACCESS_TOKEN}" | grep -i "${PBIX_DATASET_DISPLAY_NAME}" | wc -l)
 
-  # Import the dataset
-  HTTP_STATUS_CODE=$(upload_dataset "${PBIX_DATASET_DISPLAY_NAME}" "${ACCESS_TOKEN}")
+  if [ "${get_report_name}" -eq 1 ]; then
+    echo "Overwrite"
+    NAME_CONFLICT="Overwrite"
+  elif [ "${get_report_name}" -gt 1 ]; then
+    echo "Please remove the report with the duplicate name and rerun the job."
+    exit 1
+  else
+    echo "NewReports"
+    NAME_CONFLICT="Ignore"
+  fi
+  
+  # # Import the dataset
+  HTTP_STATUS_CODE=$(upload_report "${PBIX_DATASET_DISPLAY_NAME}" "${ACCESS_TOKEN}")
   if [ "${HTTP_STATUS_CODE}" -eq 202 ]; then
     echo "updated and status code 202"
   else
@@ -39,30 +47,23 @@ import_powerbi_dataset() {
   fi
 }
 
-# Function to get the ID of an existing dataset
-get_dataset_id() {
+# Function to get the ID of an existing reports
+
+get_report_name() {
   local dataset_name="$1"
   local access_token="$2"
   local response=$(curl -s -X GET "$DATASET_URL" -H "Authorization: Bearer ${access_token}")
-  echo "$response" | jq -r ".value[] | select(.name == \"$dataset_name\").id"
+  echo "$response" | jq -r '.value[].reports[] | .name' 
 }
 
-# Function to delete a dataset by ID
-delete_dataset() {
-  local dataset_id="$1"
-  local access_token="$2"
-  local HTTP_STATUS_CODE
-  HTTP_STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "${DATASET_URL}/${dataset_id}" -H "Authorization: Bearer ${access_token}")
-}
-
-# Function to upload a dataset
-upload_dataset() {
+# Function to upload a reports
+upload_report() {
   local dataset_name="$1"
   local access_token="$2"
   local HTTP_STATUS_CODE
-  HTTP_STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -X POST "${DATASET_URL}?datasetDisplayName=${dataset_name}&nameConflict=Overwrite" -H "Authorization: Bearer ${access_token}" -H "Content-Type: multipart/form-data" -F "file=@${FILE_NAME}")
+  HTTP_STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -X POST "${DATASET_URL}?datasetDisplayName=${dataset_name}&nameConflict=${NAME_CONFLICT}" -H "Authorization: Bearer ${access_token}" -H "Content-Type: multipart/form-data" -F "file=@${FILE_NAME}")
   echo "$HTTP_STATUS_CODE"
 }
 
 # Call the main function
-import_powerbi_dataset
+import_powerbi_report
