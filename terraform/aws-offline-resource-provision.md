@@ -1,4 +1,4 @@
-## Terraform Offline Mode Setup for AWS EC2
+## Terraform Offline Mode Setup for AWS
 
 ### Overview
 
