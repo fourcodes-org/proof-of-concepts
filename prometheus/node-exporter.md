@@ -12,9 +12,9 @@ sudo useradd --no-create-home -c "Monitoring user" --shell /bin/false node_expor
 _download the node exporter binary_
 
 ```bash
-wget https://github.com/prometheus/node_exporter/releases/download/v1.5.0/node_exporter-1.5.0.linux-amd64.tar.gz
-tar -vxzf node_exporter-1.5.0.linux-amd64.tar.gz
-sudo mv node_exporter-1.5.0.linux-amd64/node_exporter /usr/local/bin/
+wget https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz
+tar -vxzf node_exporter-1.6.1.linux-amd64.tar.gz
+sudo mv node_exporter-1.6.1.linux-amd64/node_exporter /usr/local/bin/
 sudo chown -R node_exporter:node_exporter  /usr/local/bin/node_exporter
 ```
 
