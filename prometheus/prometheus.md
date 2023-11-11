@@ -14,9 +14,9 @@ _download the prometheus binary_
 
 ```bash
 sudo apt install wget tar -y
-wget https://github.com/prometheus/prometheus/releases/download/v2.41.0/prometheus-2.41.0.linux-amd64.tar.gz
-tar -vxzf prometheus-2.41.0.linux-amd64.tar.gz
-mv prometheus-2.41.0.linux-amd64 prometheus-files
+wget https://github.com/prometheus/prometheus/releases/download/v2.47.2/prometheus-2.47.2.linux-amd64.tar.gz
+tar -vxzf prometheus-2.47.2.linux-amd64.tar.gz
+mv prometheus-2.47.2.linux-amd64 prometheus-files
 ```
 
 _permission management_
