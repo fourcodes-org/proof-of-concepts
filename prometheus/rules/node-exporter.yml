@@ -1,14 +1,14 @@
+---
 groups:
-
 - name: NodeExporter
-
   rules:
-
     - alert: HostOutOfMemory
       expr: '(node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 10) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}'
       for: 2m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host out of memory (instance {{ $labels.instance }})
         description: "Node memory is filling up (< 10% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -18,6 +18,8 @@ groups:
       for: 2m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host memory under memory pressure (instance {{ $labels.instance }})
         description: "The node is under heavy memory pressure. High rate of major page faults\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -27,6 +29,8 @@ groups:
       for: 1w
       labels:
         severity: info
+        app_type: linux
+        category: server
       annotations:
         summary: Host Memory is underutilized (instance {{ $labels.instance }})
         description: "Node memory is < 20% for 1 week. Consider reducing memory space. (instance {{ $labels.instance }})\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -36,6 +40,8 @@ groups:
       for: 5m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host unusual network throughput in (instance {{ $labels.instance }})
         description: "Host network interfaces are probably receiving too much data (> 100 MB/s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -45,6 +51,8 @@ groups:
       for: 5m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host unusual network throughput out (instance {{ $labels.instance }})
         description: "Host network interfaces are probably sending too much data (> 100 MB/s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -54,6 +62,8 @@ groups:
       for: 5m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host unusual disk read rate (instance {{ $labels.instance }})
         description: "Disk is probably reading too much data (> 50 MB/s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -63,6 +73,8 @@ groups:
       for: 2m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host unusual disk write rate (instance {{ $labels.instance }})
         description: "Disk is probably writing too much data (> 50 MB/s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -72,6 +84,8 @@ groups:
       for: 2m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host out of disk space (instance {{ $labels.instance }})
         description: "Disk is almost full (< 10% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -81,6 +95,8 @@ groups:
       for: 2m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host disk will fill in 24 hours (instance {{ $labels.instance }})
         description: "Filesystem is predicted to run out of space within the next 24 hours at current write rate\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -90,6 +106,8 @@ groups:
       for: 2m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host out of inodes (instance {{ $labels.instance }})
         description: "Disk is almost running out of available inodes (< 10% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -99,6 +117,8 @@ groups:
       for: 0m
       labels:
         severity: critical
+        app_type: linux
+        category: server
       annotations:
         summary: Host filesystem device error (instance {{ $labels.instance }})
         description: "{{ $labels.instance }}: Device error with the {{ $labels.mountpoint }} filesystem\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -108,6 +128,8 @@ groups:
       for: 2m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host inodes will fill in 24 hours (instance {{ $labels.instance }})
         description: "Filesystem is predicted to run out of inodes within the next 24 hours at current write rate\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -117,6 +139,8 @@ groups:
       for: 2m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host unusual disk read latency (instance {{ $labels.instance }})
         description: "Disk latency is growing (read operations > 100ms)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -126,6 +150,8 @@ groups:
       for: 2m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host unusual disk write latency (instance {{ $labels.instance }})
         description: "Disk latency is growing (write operations > 100ms)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -135,6 +161,8 @@ groups:
       for: 10m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host high CPU load (instance {{ $labels.instance }})
         description: "CPU load is > 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -144,6 +172,8 @@ groups:
       for: 1w
       labels:
         severity: info
+        app_type: linux
+        category: server
       annotations:
         summary: Host CPU is underutilized (instance {{ $labels.instance }})
         description: "CPU load is < 20% for 1 week. Consider reducing the number of CPUs.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -153,6 +183,8 @@ groups:
       for: 0m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host CPU steal noisy neighbor (instance {{ $labels.instance }})
         description: "CPU steal is > 10%. A noisy neighbor is killing VM performances or a spot instance may be out of credit.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -162,6 +194,8 @@ groups:
       for: 0m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host CPU high iowait (instance {{ $labels.instance }})
         description: "CPU iowait > 10%. A high iowait means that you are disk or network bound.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -171,6 +205,8 @@ groups:
       for: 5m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host unusual disk IO (instance {{ $labels.instance }})
         description: "Time spent in IO is too high on {{ $labels.instance }}. Check storage for issues.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -180,6 +216,8 @@ groups:
       for: 0m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host context switching (instance {{ $labels.instance }})
         description: "Context switching is growing on the node (> 10000 / s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -189,6 +227,8 @@ groups:
       for: 2m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host swap is filling up (instance {{ $labels.instance }})
         description: "Swap is filling up (>80%)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -198,6 +238,8 @@ groups:
       for: 0m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host systemd service crashed (instance {{ $labels.instance }})
         description: "systemd service crashed\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -207,6 +249,8 @@ groups:
       for: 5m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host physical component too hot (instance {{ $labels.instance }})
         description: "Physical hardware component too hot\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -216,6 +260,8 @@ groups:
       for: 0m
       labels:
         severity: critical
+        app_type: linux
+        category: server
       annotations:
         summary: Host node overtemperature alarm (instance {{ $labels.instance }})
         description: "Physical node temperature alarm triggered\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -225,6 +271,8 @@ groups:
       for: 0m
       labels:
         severity: critical
+        app_type: linux
+        category: server
       annotations:
         summary: Host RAID array got inactive (instance {{ $labels.instance }})
         description: "RAID array {{ $labels.device }} is in a degraded state due to one or more disk failures. The number of spare drives is insufficient to fix the issue automatically.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -234,6 +282,8 @@ groups:
       for: 2m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host RAID disk failure (instance {{ $labels.instance }})
         description: "At least one device in RAID array on {{ $labels.instance }} failed. Array {{ $labels.md_device }} needs attention and possibly a disk swap\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -243,6 +293,8 @@ groups:
       for: 6h
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host kernel version deviations (instance {{ $labels.instance }})
         description: "Different kernel versions are running\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -252,6 +304,8 @@ groups:
       for: 0m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host OOM kill detected (instance {{ $labels.instance }})
         description: "OOM kill detected\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -261,6 +315,8 @@ groups:
       for: 0m
       labels:
         severity: info
+        app_type: linux
+        category: server
       annotations:
         summary: Host EDAC Correctable Errors detected (instance {{ $labels.instance }})
         description: "Host {{ $labels.instance }} has had {{ printf \"%.0f\" $value }} correctable memory errors reported by EDAC in the last 5 minutes.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -270,6 +326,8 @@ groups:
       for: 0m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host EDAC Uncorrectable Errors detected (instance {{ $labels.instance }})
         description: "Host {{ $labels.instance }} has had {{ printf \"%.0f\" $value }} uncorrectable memory errors reported by EDAC in the last 5 minutes.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -279,6 +337,8 @@ groups:
       for: 2m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host Network Receive Errors (instance {{ $labels.instance }})
         description: "Host {{ $labels.instance }} interface {{ $labels.device }} has encountered {{ printf \"%.0f\" $value }} receive errors in the last two minutes.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -288,6 +348,8 @@ groups:
       for: 2m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host Network Transmit Errors (instance {{ $labels.instance }})
         description: "Host {{ $labels.instance }} interface {{ $labels.device }} has encountered {{ printf \"%.0f\" $value }} transmit errors in the last two minutes.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -297,6 +359,8 @@ groups:
       for: 1m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host Network Interface Saturated (instance {{ $labels.instance }})
         description: "The network interface \"{{ $labels.device }}\" on \"{{ $labels.instance }}\" is getting overloaded.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -306,6 +370,8 @@ groups:
       for: 2m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host Network Bond Degraded (instance {{ $labels.instance }})
         description: "Bond \"{{ $labels.device }}\" degraded on \"{{ $labels.instance }}\".\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -315,6 +381,8 @@ groups:
       for: 5m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host conntrack limit (instance {{ $labels.instance }})
         description: "The number of conntrack is approaching limit\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -324,6 +392,8 @@ groups:
       for: 10m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host clock skew (instance {{ $labels.instance }})
         description: "Clock skew detected. Clock is out of sync. Ensure NTP is configured correctly on this host.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -333,6 +403,8 @@ groups:
       for: 2m
       labels:
         severity: warning
+        app_type: linux
+        category: server
       annotations:
         summary: Host clock not synchronising (instance {{ $labels.instance }})
         description: "Clock not synchronising. Ensure NTP is configured on this host.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -342,6 +414,8 @@ groups:
       for: 4h
       labels:
         severity: info
+        app_type: linux
+        category: server
       annotations:
         summary: Host requires reboot (instance {{ $labels.instance }})
         description: "{{ $labels.instance }} requires a reboot.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"

@@ -9,6 +9,8 @@ groups:
       for: 0m
       labels:
         severity: warning
+        app_type: container
+        category: cadviser
       annotations:
         summary: Container killed (instance {{ $labels.instance }})
         description: "A container has disappeared\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -18,6 +20,8 @@ groups:
       for: 5m
       labels:
         severity: warning
+        app_type: container
+        category: cadviser
       annotations:
         summary: Container absent (instance {{ $labels.instance }})
         description: "A container is absent for 5 min\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -27,6 +31,8 @@ groups:
       for: 2m
       labels:
         severity: warning
+        app_type: container
+        category: cadviser
       annotations:
         summary: Container High CPU utilization (instance {{ $labels.instance }})
         description: "Container CPU utilization is above 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -36,6 +42,8 @@ groups:
       for: 2m
       labels:
         severity: warning
+        app_type: container
+        category: cadviser
       annotations:
         summary: Container High Memory usage (instance {{ $labels.instance }})
         description: "Container Memory usage is above 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -45,6 +53,8 @@ groups:
       for: 2m
       labels:
         severity: warning
+        app_type: container
+        category: cadviser
       annotations:
         summary: Container Volume usage (instance {{ $labels.instance }})
         description: "Container Volume usage is above 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -54,6 +64,8 @@ groups:
       for: 2m
       labels:
         severity: warning
+        app_type: container
+        category: cadviser
       annotations:
         summary: Container high throttle rate (instance {{ $labels.instance }})
         description: "Container is being throttled\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -63,6 +75,8 @@ groups:
       for: 7d
       labels:
         severity: info
+        app_type: container
+        category: cadviser
       annotations:
         summary: Container Low CPU utilization (instance {{ $labels.instance }})
         description: "Container CPU utilization is under 20% for 1 week. Consider reducing the allocated CPU.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
@@ -72,6 +86,8 @@ groups:
       for: 7d
       labels:
         severity: info
+        app_type: container
+        category: cadviser
       annotations:
         summary: Container Low Memory usage (instance {{ $labels.instance }})
         description: "Container Memory usage is under 20% for 1 week. Consider reducing the allocated memory.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
