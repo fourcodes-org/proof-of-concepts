@@ -496,3 +496,28 @@ groups:
         summary: "Node free disk space is running out"
         description: "Node disk is going to full (< 30% left)\n  Current free disk space is {{ $value }}"
 ```
+
+_email alerts_
+
+```bash
+---
+global:
+  resolve_timeout: 30s
+route:
+  receiver: 'linux-admin'
+  repeat_interval: 30s
+  group_wait: 15s
+  group_interval: 15s
+
+receivers:
+  - name: 'linux-admin'
+    email_configs:
+      - smarthost: 'smtp.gmail.com:587'
+        from: 'xxx@gmail.com'
+        auth_username: 'xxx@gmail.com'
+        auth_password: 'xxx'
+        to: 'xxx@xx.com'
+        headers:
+          subject: 'Prometheus Mail Alerts'
+
+```
