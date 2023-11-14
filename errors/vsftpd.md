@@ -2,7 +2,8 @@
 
 ![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/a23e0845-3aeb-42f9-9d0f-893d6a3a0fa7)
 
-**_solution_**
+_Solution_
+-----------
 
 we need to give the vsftpd user permission for the document root.
 
