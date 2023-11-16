@@ -46,6 +46,7 @@ docker-compose -v
 ```sh
 - sudo chmod 664 /var/run/docker.sock
 ```
+---
 ERROR 2
 -------
 When try to launch mysql docker container. it says some error.
@@ -55,6 +56,7 @@ When try to launch mysql docker container. it says some error.
 ss -tulpn | grep 3306
 sudo systemctl stop mysql
 ```
+---
 ERROR 3
 -------
 ![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/753e85cd-3644-4880-9995-562eeaa5fd28)
@@ -63,7 +65,7 @@ ERROR 3
 1. Check the network connectivity for local
 2. In case if we are using instance, check the igw connection and outbound rules too.
 ```
-
+---
 ERROR 4
 -------
 When we try to get a reponse in nodejs from webserver. we will get this error.
@@ -76,6 +78,7 @@ example:
 in app(node) server,
 `node index.js` or 'nodemon index.js`
 ```
+---
 ERROR 5
 -------
 ![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/097b7d0a-c83b-43b1-bab8-97d422b12e0f)
