@@ -112,7 +112,7 @@ _initiate the cluster on `node1`_
 drbdadm -- --overwrite-data-of-peer primary clusterdb
 ```
 
-_check the drbd sync status both `node1` and `node2`
+_check the drbd sync status both `node1` and `node2`_
 
 ```bash
  cat /proc/drbd
