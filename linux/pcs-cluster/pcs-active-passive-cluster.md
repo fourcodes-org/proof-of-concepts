@@ -82,13 +82,13 @@ resource clusterdb {
   }
   on node1 {
     device /dev/drbd0;
-    disk /dev/sdb;
+    disk /dev/sdb;                     # enter the disk name without mounting
     address 192.168.1.100:7788;
     flexible-meta-disk internal;
   }
  on node2 {
-    device /dev/drbd0;
-    disk /dev/sdb;
+    device /dev/drbd0;    
+    disk /dev/sdb;                     # enter the disk name without mounting
     address 192.168.1.102:7788;
     meta-disk internal;
   }
