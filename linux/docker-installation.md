@@ -64,8 +64,6 @@ sudo systemctl enable docker
 
 ```bash
 sudo usermod -aG docker $USER
-
-#reboot the system
 ```
 
 _docker compose installation_
