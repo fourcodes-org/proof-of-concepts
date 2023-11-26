@@ -4,5 +4,7 @@
 
 sudo apt update
 sudo apt upgrade -y
+sudo apt install default-jdk -y
+sudo apt install mysql-server -y
 
 ```
