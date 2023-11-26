@@ -44,3 +44,5 @@ mv wildfly-29.0.1.Final wildfly
 
 ```
 https://github.com/dcm4che/dcm4chee-arc-light/wiki/Installation/bb4e386512238199498a258f17955afdfe608c4e
+
+https://docs.wildfly.org/18/Admin_Guide.html#jdbc-driver-installation
