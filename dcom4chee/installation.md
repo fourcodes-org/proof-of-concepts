@@ -14,10 +14,10 @@ GRANT ALL PRIVILEGES ON *.* TO 'dcom4chee'@'%';
 FLUSH PRIVILEGES;
 
 cd /opt
-wget https://sourceforge.net/projects/dcm4che/files/dcm4chee/2.18.3/dcm4chee-2.18.3-mysql.zip
-unzip dcm4chee-2.18.3-mysql.zip
-mv dcm4chee-2.18.3-mysql dcm4chee
-rm -rf dcm4chee-2.18.3-mysql.zip
+wget https://sourceforge.net/projects/dcm4che/files/dcm4chee-arc-light5/5.31.1/dcm4chee-arc-5.31.1-mysql.zip
+unzip dcm4chee-arc-5.31.1-mysql.zip
+mv dcm4chee-arc-5.31.1-mysql dcm4chee
+rm -rf dcm4chee-arc-5.31.1-mysql.zip
 
 mysql -u dcom4chee -pdcom4chee@123 dcomdb < /opt/dcm4chee/sql/mysql/create-mysql.sql
 
