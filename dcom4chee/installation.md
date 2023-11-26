@@ -25,6 +25,14 @@ sudo apt install slapd ldap-utils -y
 
 cp -r /opt/dcm4chee/ldap/schema/* /etc/ldap/schema/
 
+vim /etc/ldap/ldap.conf
+
+include         /etc/ldap/schema/core.schema
+include         /etc/ldap/schema/dicom.schema
+include         /etc/ldap/schema/dcm4che.schema
+include         /etc/ldap/schema/dcm4chee-archive.schema
+include         /etc/ldap/schema/dcm4chee-archive-ui.schema
+
 
 wget https://sourceforge.net/projects/jboss/files/JBoss/JBoss-6.0.0.Final/jboss-as-distribution-6.0.0.Final.zip
 unzip jboss-as-distribution-6.0.0.Final.zip
