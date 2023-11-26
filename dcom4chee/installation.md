@@ -22,4 +22,8 @@ wget https://sourceforge.net/projects/jboss/files/JBoss/JBoss-6.0.0.Final/jboss-
 unzip jboss-as-distribution-6.0.0.Final.zip
 mv jboss-6.0.0.Final jboss
 rm -rf jboss-as-distribution-6.0.0.Final.zip
+
+wget https://github.com/wildfly/wildfly/releases/download/29.0.1.Final/wildfly-29.0.1.Final.zip
+mv wildfly-29.0.1.Final wildfly
+
 ```
