@@ -19,6 +19,8 @@ unzip dcm4chee-2.18.3-mysql.zip
 mv dcm4chee-2.18.3-mysql dcm4chee
 rm -rf dcm4chee-2.18.3-mysql.zip
 
+mysql -u dcom4chee -pdcom4chee@123 dcomdb < /opt/dcm4chee/sql/mysql/create-mysql.sql
+
 wget https://sourceforge.net/projects/jboss/files/JBoss/JBoss-6.0.0.Final/jboss-as-distribution-6.0.0.Final.zip
 unzip jboss-as-distribution-6.0.0.Final.zip
 mv jboss-6.0.0.Final jboss
