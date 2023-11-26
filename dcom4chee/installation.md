@@ -21,6 +21,11 @@ rm -rf dcm4chee-arc-5.31.1-mysql.zip
 
 mysql -u dcom4chee -pdcom4chee@123 dcomdb < /opt/dcm4chee/sql/mysql/create-mysql.sql
 
+sudo apt install slapd ldap-utils -y
+
+cp -r /opt/dcm4chee/ldap/schema/* /etc/ldap/schema/
+
+
 wget https://sourceforge.net/projects/jboss/files/JBoss/JBoss-6.0.0.Final/jboss-as-distribution-6.0.0.Final.zip
 unzip jboss-as-distribution-6.0.0.Final.zip
 mv jboss-6.0.0.Final jboss
