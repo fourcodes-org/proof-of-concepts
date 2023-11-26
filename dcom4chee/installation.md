@@ -9,6 +9,7 @@ sudo apt install mysql-server -y
 sudo apt install unzip -y
 mysql -u root
 CREATE USER 'dcom4chee'@'%' IDENTIFIED BY 'dcom4chee@123';
+CREATE DATABASE dcomdb;
 GRANT ALL PRIVILEGES ON *.* TO 'dcom4chee'@'%';
 FLUSH PRIVILEGES;
 
