@@ -16,4 +16,10 @@ cd /opt
 wget https://sourceforge.net/projects/dcm4che/files/dcm4chee/2.18.3/dcm4chee-2.18.3-mysql.zip
 unzip dcm4chee-2.18.3-mysql.zip
 mv dcm4chee-2.18.3-mysql dcm4chee
+rm -rf dcm4chee-2.18.3-mysql.zip
+
+wget https://sourceforge.net/projects/jboss/files/JBoss/JBoss-6.0.0.Final/jboss-as-distribution-6.0.0.Final.zip
+unzip jboss-as-distribution-6.0.0.Final.zip
+mv jboss-6.0.0.Final jboss
+rm -rf jboss-as-distribution-6.0.0.Final.zip
 ```
