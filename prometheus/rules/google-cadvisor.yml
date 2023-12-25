@@ -1,9 +1,7 @@
+---
 groups:
-
 - name: GoogleCadvisor
-
   rules:
-
     - alert: ContainerKilled
       expr: 'time() - container_last_seen > 60'
       for: 0m
@@ -12,8 +10,8 @@ groups:
         app_type: container
         category: cadviser
       annotations:
-        summary: Container killed (instance {{ $labels.instance }})
-        description: "A container has disappeared\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        summary: '{{ $labels.instance }} server - Container killed.'
+        description: "A container has disappeared and current state value is {{ $value }}."
 
     - alert: ContainerAbsent
       expr: 'absent(container_last_seen)'
@@ -23,8 +21,8 @@ groups:
         app_type: container
         category: cadviser
       annotations:
-        summary: Container absent (instance {{ $labels.instance }})
-        description: "A container is absent for 5 min\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        summary: '{{ $labels.instance }} server - Container absent.'
+        description: "A container is absent for 5 min and current state value is {{ $value }}."
 
     - alert: ContainerHighCpuUtilization
       expr: '(sum(rate(container_cpu_usage_seconds_total{name!=""}[3m])) BY (instance, name) * 100) > 80'
@@ -34,8 +32,8 @@ groups:
         app_type: container
         category: cadviser
       annotations:
-        summary: Container High CPU utilization (instance {{ $labels.instance }})
-        description: "Container CPU utilization is above 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        summary: '{{ $labels.instance }} server - Container High CPU utilization.'
+        description: "Container CPU utilization is above 80% and current state value is {{ $value }}."
 
     - alert: ContainerHighMemoryUsage
       expr: '(sum(container_memory_working_set_bytes{name!=""}) BY (instance, name) / sum(container_spec_memory_limit_bytes > 0) BY (instance, name) * 100) > 80'
@@ -45,19 +43,8 @@ groups:
         app_type: container
         category: cadviser
       annotations:
-        summary: Container High Memory usage (instance {{ $labels.instance }})
-        description: "Container Memory usage is above 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-
-    - alert: ContainerVolumeUsage
-      expr: '(1 - (sum(container_fs_inodes_free{name!=""}) BY (instance) / sum(container_fs_inodes_total) BY (instance))) * 100 > 80'
-      for: 2m
-      labels:
-        severity: warning
-        app_type: container
-        category: cadviser
-      annotations:
-        summary: Container Volume usage (instance {{ $labels.instance }})
-        description: "Container Volume usage is above 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        summary: '{{ $labels.instance }} server - Container High Memory usage.'
+        description: "Container Memory usage is above 80% and current state value is {{ $value }}."
 
     - alert: ContainerHighThrottleRate
       expr: 'rate(container_cpu_cfs_throttled_seconds_total[3m]) > 1'
@@ -67,8 +54,8 @@ groups:
         app_type: container
         category: cadviser
       annotations:
-        summary: Container high throttle rate (instance {{ $labels.instance }})
-        description: "Container is being throttled\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        summary: '{{ $labels.instance }} server - Container high throttle rate'
+        description: "Container is being throttled and current state value is {{ $value }}."
 
     - alert: ContainerLowCpuUtilization
       expr: '(sum(rate(container_cpu_usage_seconds_total{name!=""}[3m])) BY (instance, name) * 100) < 20'
@@ -78,8 +65,8 @@ groups:
         app_type: container
         category: cadviser
       annotations:
-        summary: Container Low CPU utilization (instance {{ $labels.instance }})
-        description: "Container CPU utilization is under 20% for 1 week. Consider reducing the allocated CPU.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        summary: '{{ $labels.instance }} server - Container Low CPU utilization'
+        description: "Container CPU utilization is under 20% for 1 week. Consider reducing the allocated CPU and current state value is {{ $value }}."
 
     - alert: ContainerLowMemoryUsage
       expr: '(sum(container_memory_working_set_bytes{name!=""}) BY (instance, name) / sum(container_spec_memory_limit_bytes > 0) BY (instance, name) * 100) < 20'
@@ -89,5 +76,5 @@ groups:
         app_type: container
         category: cadviser
       annotations:
-        summary: Container Low Memory usage (instance {{ $labels.instance }})
-        description: "Container Memory usage is under 20% for 1 week. Consider reducing the allocated memory.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        summary: '{{ $labels.instance }} server - Container Low Memory usage.'
+        description: "Container Memory usage is under 20% for 1 week. Consider reducing the allocated memory and current state value is {{ $value }}."
