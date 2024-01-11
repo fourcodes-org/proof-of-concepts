@@ -11,3 +11,6 @@ certbot certonly --webroot -w /var/www/ashli -d ashli.januo.io
 
 **output**
 ![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/deb7f394-9e4b-4df6-bf9a-29ac442834f3)
+
+After used the ssl, we got this output
+![image](https://github.com/januo-org/proof-of-concepts/assets/91359308/82f00fba-11f7-4d68-8d29-313f72b3fdc2)
