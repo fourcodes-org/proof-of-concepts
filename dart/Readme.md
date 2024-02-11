@@ -22,5 +22,20 @@ void main() {
     print("wrong value");
   }
 }
+```
 
+elif conditions
+
+```dart
+void main() {
+  String name = "four";
+  print("total length of :  ${name.length}");
+  if (name == "four") {
+    print("correct value");
+  } else if (name == 4) {
+    print("mimatch value");
+  } else {
+    print("wrong value");
+  }
+}
 ```
