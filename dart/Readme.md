@@ -126,3 +126,21 @@ void main() {
 }
 
 ```
+
+
+```dart
+void main() {
+  List numbers = [1, 2, 3, 4];
+
+  for (int number in numbers) {
+    print(number);
+  }
+
+  List names = ["jino", "mike", "john"];
+
+  for (String name in names) {
+    print(name);
+  }
+}
+
+```
