@@ -100,3 +100,14 @@ void main() {
   }
 }
 ```
+
+for loop
+
+```dart
+void main() {
+  for (var i = 1; i <= 10; i++) {
+    print("Development value is : ${i}");
+  }
+}
+
+```
