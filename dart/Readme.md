@@ -111,3 +111,18 @@ void main() {
 }
 
 ```
+
+while loop
+
+
+```dart
+void main() {
+  int count = 0;
+
+  while (count < 5) {
+    print('Count: $count');
+    count++;
+  }
+}
+
+```
