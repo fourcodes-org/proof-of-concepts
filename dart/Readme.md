@@ -73,3 +73,30 @@ void main() {
   }
 }
 ```
+
+__switch case_
+
+```dart
+void main() {
+  String name = "four";
+
+  switch (name) {
+    case "fours":
+      {
+        print(name);
+      }
+    case "four":
+      {
+        print(name);
+      }
+    case "one":
+      {
+        print(name);
+      }
+    default:
+      {
+        print("null values passed");
+      }
+  }
+}
+```
