@@ -10,6 +10,40 @@ sudo apt-get update
 sudo apt-get install dart -y
 ```
 
+data types
+
+```dart
+void main() {
+  String name = "four";
+
+  print(name);
+
+  int number = 4;
+
+  print(number);
+
+  double float = 9.18;
+
+  print(float);
+
+  var identity = "human";
+
+  print(identity);
+
+  const String project = "demo";
+
+  print(project);
+
+  final String work = "development";
+
+  print(work);
+
+  bool isValid = false;
+
+  print(isValid);
+}
+```
+
 if conditions
 
 ```dart
