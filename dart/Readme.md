@@ -9,3 +9,18 @@ echo 'deb [signed-by=/usr/share/keyrings/dart.gpg arch=amd64] https://storage.go
 sudo apt-get update
 sudo apt-get install dart -y
 ```
+
+if conditions
+
+```dart
+void main() {
+  String name = "four";
+  print("total length of :  ${name.length}");
+  if (name == "four") {
+    print("correct value");
+  } else {
+    print("wrong value");
+  }
+}
+
+```
