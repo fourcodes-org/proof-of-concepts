@@ -1,7 +1,6 @@
 # How to to access the aws resources from azure windows machine
 
 ```ps1
-
 $RESPONSE = Invoke-WebRequest -Uri 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://management.azure.com' -Headers @{Metadata="true"}
 $CONTENT = $RESPONSE.Content | ConvertFrom-Json
 $IDENTITY_OIDC_TOKEN = $CONTENT.access_token
@@ -31,7 +30,6 @@ $env:AWS_SESSION_TOKEN = $AWSCREDENTIALS.Credentials.SessionToken
 # Verify the assumed role
 aws sts get-caller-identity
 
-
 # Implement the logic 
 
 aws s3 ls 
@@ -40,6 +38,4 @@ aws s3 ls
 Remove-Item -Path Env:\AWS_ACCESS_KEY_ID
 Remove-Item -Path Env:\AWS_SECRET_ACCESS_KEY
 Remove-Item -Path Env:\AWS_SESSION_TOKEN
-
-
 ```
