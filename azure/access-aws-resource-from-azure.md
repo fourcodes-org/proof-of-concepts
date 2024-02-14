@@ -5,8 +5,11 @@
 $RESPONSE = Invoke-WebRequest -Uri 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://management.azure.com' -Headers @{Metadata="true"}
 $CONTENT = $RESPONSE.Content | ConvertFrom-Json
 $IDENTITY_OIDC_TOKEN = $CONTENT.access_token
+
+# Print the output
 Write-Output $IDENTITY_OIDC_TOKEN
 
+# AWS Arn details
 $ROLE_ARN = "arn:aws:iam::xxx:role/demo-access-s3"
 
 # Export AWS credentials using assumed role with web identity
