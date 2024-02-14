@@ -31,7 +31,6 @@ $env:AWS_SESSION_TOKEN = $AWSCREDENTIALS.Credentials.SessionToken
 aws sts get-caller-identity
 
 # Implement the logic 
-
 aws s3 ls 
 
 # Remove the tmp environment variables
