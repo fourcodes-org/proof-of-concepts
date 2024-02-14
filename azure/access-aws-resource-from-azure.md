@@ -7,7 +7,7 @@ $CONTENT = $RESPONSE.Content | ConvertFrom-Json
 $IDENTITY_OIDC_TOKEN = $CONTENT.access_token
 Write-Output $IDENTITY_OIDC_TOKEN
 
-$ROLE_ARN = "arn:aws:iam::xxx:role/sitecore-access-s3-siah"
+$ROLE_ARN = "arn:aws:iam::xxx:role/demo-access-s3"
 
 # Export AWS credentials using assumed role with web identity
 $AWSCREDENTIALS = aws sts assume-role-with-web-identity `
