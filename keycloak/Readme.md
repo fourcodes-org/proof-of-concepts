@@ -68,3 +68,28 @@ services:
     depends_on:
       - keycloak
 ```
+
+# monitor the keycloak
+
+
+
+1. /health/live
+2. /health/ready
+3. /health/started
+4. /health
+5. /metrics
+
+
+# perfomance
+
+You have to increase buffer sizes.
+
+On Linux systems, in `/etc/sysctl.conf` add those two lines :
+
+ 
+```conf
+# Allow a 25MB UDP receive buffer for JGroups
+net.core.rmem_max = 26214400
+# Allow a 1MB UDP send buffer for JGroups
+net.core.wmem_max = 1048576
+```
