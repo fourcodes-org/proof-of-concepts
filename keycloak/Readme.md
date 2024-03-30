@@ -1,7 +1,6 @@
 # keycloak
 
-
-```console
+```yaml
 version: '3'
 volumes:
   postgres_data:
@@ -34,25 +33,32 @@ services:
     restart: on-failure:5
     environment:
       KC_HEALTH_ENABLED: true
-      DB_VENDOR: POSTGRES
-      DB_ADDR: postgres
-      DB_DATABASE: keycloak
-      DB_USER: keycloakuser
-      DB_SCHEMA: public
-      DB_PASSWORD: keycloakpass
+      KC_METRICS_ENABLED: true
+      KC_TRANSACTION_XA_ENABLED: true
+      KC_DB_URL_HOST: postgres
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_USERNAME: keycloakuser
+      KC_DB_PASSWORD: keycloakpass
+      KC_DB_URL_PORT: 5432
+      KC_DB: postgres
       KEYCLOAK_ADMIN: rcms
       KEYCLOAK_ADMIN_PASSWORD: rcms
-      KC_PROXY_ADDRESS_FORWARDING: true
+      KC_LOG_CONSOLE_OUTPUT: json
+      KC_LOG_CONSOLE_COLOR: true
+      KC_LOG_LEVEL: INFO
       KC_HTTP_ENABLED: true
+      KC_PROXY_ADDRESS_FORWARDING: true
+      KC_PROXY_HEADERS: xforwarded   
       KC_HOSTNAME_URL: https://auth.fourcodes.net
       KC_HOSTNAME_ADMIN_URL: https://auth.fourcodes.net
       KC_HOSTNAME_PATH: /
       KC_HOSTNAME_STRICT_HTTPS: true
       KC_HOSTNAME_STRICT: false
       KC_HOSTNAME_STRICT_BACKCHANNET: true
-      KC_PROXY: edge
+      JAVA_OPTS_APPEND: "-Xmx1g"
+      JAVA_OPTS_KC_HEAP: "-XX:MaxHeapFreeRatio=30 -XX:MaxRAMPercentage=65"
     ports:
-      - '8080:8080'
+      - 8080:8080
     command:
       - start
     depends_on:
@@ -82,14 +88,27 @@ services:
 
 # perfomance
 
-You have to increase buffer sizes.
+You have to increase buffer sizes on Linux systems, in `/etc/sysctl.conf` add those two lines
 
-On Linux systems, in `/etc/sysctl.conf` add those two lines :
-
- 
 ```conf
 # Allow a 25MB UDP receive buffer for JGroups
 net.core.rmem_max = 26214400
 # Allow a 1MB UDP send buffer for JGroups
 net.core.wmem_max = 1048576
 ```
+# command
+
+```cmd
+sysctl -p
+```
+# docs
+
+1. https://www.keycloak.org/guides#server
+2. https://www.keycloak.org/server/containers
+3. https://www.keycloak.org/server/hostname
+4. https://www.keycloak.org/server/caching
+5. https://www.keycloak.org/server/hostname
+6. https://www.keycloak.org/server/health
+7. https://www.keycloak.org/server/configuration-metrics
+8. https://www.keycloak.org/server/logging
+9. https://www.keycloak.org/server/db
