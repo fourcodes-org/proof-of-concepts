@@ -1,8 +1,7 @@
 # keycloak
 
 
-```compose
-
+```console
 version: '3'
 volumes:
   postgres_data:
@@ -43,29 +42,29 @@ services:
       DB_PASSWORD: keycloakpass
       KEYCLOAK_ADMIN: rcms
       KEYCLOAK_ADMIN_PASSWORD: rcms
-      # KC_PROXY_ADDRESS_FORWARDING: true
-      # KC_HTTP_ENABLED: true
-      # KC_HOSTNAME_URL: https://keycloak.fourcodes.net
-      # KC_HOSTNAME_ADMIN_URL: https://keycloak.fourcodes.net
-      # # KC_HOSTNAME_PATH: /
-      # KC_HOSTNAME_STRICT_HTTPS: true
-      # KC_HOSTNAME_STRICT: false
-      # KC_HOSTNAME_STRICT_BACKCHANNET: true
-      # KC_PROXY: edge
+      KC_PROXY_ADDRESS_FORWARDING: true
+      KC_HTTP_ENABLED: true
+      KC_HOSTNAME_URL: https://auth.fourcodes.net
+      KC_HOSTNAME_ADMIN_URL: https://auth.fourcodes.net
+      KC_HOSTNAME_PATH: /
+      KC_HOSTNAME_STRICT_HTTPS: true
+      KC_HOSTNAME_STRICT: false
+      KC_HOSTNAME_STRICT_BACKCHANNET: true
+      KC_PROXY: edge
     ports:
-      - 8080:8080
+      - '8080:8080'
     command:
-      - start-dev
+      - start
     depends_on:
       - postgres
-  # proxy:
-  #   image: docker.io/library/auth.fourcodes.net:latest
-  #   container_name: proxy
-  #   hostname: proxy
-  #   restart: on-failure:5
-  #   ports:
-  #     - 80:80
-  #     - 443:443
-  #   depends_on:
-  #     - keycloak
+  proxy:
+    image: docker.io/library/auth.fourcodes.net:latest
+    container_name: proxy
+    hostname: proxy
+    restart: on-failure:5
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - keycloak
 ```
