@@ -34,6 +34,11 @@ services:
       GF_STRICT_FLUSH_INTERVAL: "true"
 ```
 
+# Keycloak flow
+
+![image](https://github.com/fourcodes-org/proof-of-concepts/assets/57703276/ec77df8a-cad7-4d9e-84fa-196b0318bc14)
+
+
 # Reference
 
 https://stackoverflow.com/questions/68741412/grafana-generic-oauth-role-assignment
