@@ -1,4 +1,4 @@
-# Keycloack single singOn implementation
+# Grafana keycloack single singOn implementation
 
 ```yml
 ---
