@@ -2,9 +2,14 @@
 
 ```yaml
 version: '3'
+
+networks:
+  keycloak_net:
+
 volumes:
   postgres_data:
     driver: local
+
 services:
   postgres:
     image: postgres:16.0
@@ -26,6 +31,9 @@ services:
       POSTGRES_USER: keycloakuser
       POSTGRES_PASSWORD: keycloakpass
     restart: on-failure:5
+    networks:
+      - keycloak_net
+
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     container_name: keycloak
@@ -49,22 +57,23 @@ services:
       KC_HTTP_ENABLED: true
       KC_PROXY_ADDRESS_FORWARDING: true
       KC_PROXY_HEADERS: xforwarded   
-      KC_HOSTNAME_URL: https://auth.fourcodes.net
-      KC_HOSTNAME_ADMIN_URL: https://auth.fourcodes.net
+      KC_HOSTNAME_URL: https://keycloak.fourcodes.net
+      KC_HOSTNAME_ADMIN_URL: https://keycloak.fourcodes.net
       KC_HOSTNAME_PATH: /
       KC_HOSTNAME_STRICT_HTTPS: true
       KC_HOSTNAME_STRICT: false
       KC_HOSTNAME_STRICT_BACKCHANNET: true
       JAVA_OPTS_APPEND: "-Xmx1g"
       JAVA_OPTS_KC_HEAP: "-XX:MaxHeapFreeRatio=30 -XX:MaxRAMPercentage=65"
-    ports:
-      - 8080:8080
     command:
       - start
     depends_on:
       - postgres
+    networks:
+      - keycloak_net
+
   proxy:
-    image: docker.io/library/auth.fourcodes.net:latest
+    image: keycloak-proxy-server:latest
     container_name: proxy
     hostname: proxy
     restart: on-failure:5
@@ -73,6 +82,8 @@ services:
       - 443:443
     depends_on:
       - keycloak
+    networks:
+      - keycloak_net
 ```
 
 # monitor the keycloak
