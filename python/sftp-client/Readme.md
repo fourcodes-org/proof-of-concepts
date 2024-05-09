@@ -37,7 +37,10 @@ class SFTPManager:
             ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             decoded_private_key = base64.b64decode(self.encoded_ssh_private_key).decode("utf-8")
             private_key = paramiko.RSAKey.from_private_key(file_obj=io.StringIO(decoded_private_key))
-            ssh_client.connect(self.host, port=self.port, username=self.username, pkey=private_key)
+            try:
+                ssh_client.connect(self.host, port=self.port, username=self.username, pkey=private_key)
+            except:
+                ssh_client.connect(self.host, port=self.port, username=self.username, pkey=private_key, disabled_algorithms={'pubkeys': ['rsa-sha2-256', 'rsa-sha2-512']})
             if self.debug:
                 self.logger.debug("Connected to %s", self.host)
             return ssh_client
