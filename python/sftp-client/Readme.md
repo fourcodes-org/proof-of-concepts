@@ -39,8 +39,11 @@ class SFTPManager:
             decoded_private_key = base64.b64decode(self.encoded_ssh_private_key).decode("utf-8")
             private_key = paramiko.RSAKey.from_private_key(file_obj=io.StringIO(decoded_private_key))
             ssh_client.connect(self.host, port=self.port, username=self.username, pkey=private_key, timeout=self.timeout)
-            if self.debug:
-                self.logger.debug("%s - Authentication (publickey) successful!", self.host)
+            try:
+                ssh_client.connect(self.host, port=self.port, username=self.username, pkey=private_key, timeout=self.timeout)
+            except:
+                ssh_client.connect(self.host, port=self.port, username=self.username, pkey=private_key, timeout=self.timeout, disabled_algorithms={'pubkeys': ['rsa-sha2-256', 'rsa-sha2-512']})
+            self.logger.debug("%s - Authentication (publickey) successful!", self.host) if self.debug else None
             return ssh_client
         except paramiko.AuthenticationException as auth_err:
             self.logger.error("Authentication failed: %s", str(auth_err))
