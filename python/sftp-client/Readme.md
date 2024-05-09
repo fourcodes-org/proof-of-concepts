@@ -83,3 +83,20 @@ class SFTPManager:
                 sftp_client.close()
                 ssh_client.close()
 ```
+
+How to debug the code
+
+```py
+# Get global_debug_vars from environment
+global_debug_vars = os.environ.get('global_debug_vars')
+
+# Check if global_debug_vars is set to 'True' (as a string)
+if global_debug_vars and global_debug_vars.lower() == 'true':
+    logging.basicConfig(level=logging.DEBUG)
+
+sftp_manager = SFTPManager(host=host, port=22, username=username, encoded_ssh_private_key=encoded_ssh_private_key, debug=True)
+# Uploading a file
+sftp_manager.upload_file(remote_path="main.txt", local_path="main.txt") 
+# Downloading a file
+sftp_manager.download_file(remote_file_path="main.txt", local_file_path="fourcodes.txt")
+```
