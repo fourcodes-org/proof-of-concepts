@@ -92,7 +92,7 @@ global_debug_vars = os.environ.get('global_debug_vars')
 if global_debug_vars and global_debug_vars.lower() == 'true':
     logging.basicConfig(level=logging.DEBUG)
 
-sftp_manager = SFTPManager(host=host, port=22, username=username, encoded_ssh_private_key=encoded_ssh_private_key, debug=True)
+sftp_manager = SFTPManager(host=host, port=port, username=username, encoded_ssh_private_key=encoded_ssh_private_key, debug=True)
 # Uploading a file
 sftp_manager.upload_file(remote_path="main.txt", local_path="main.txt") 
 # Downloading a file
