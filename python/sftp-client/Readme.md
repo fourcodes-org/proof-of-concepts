@@ -5,7 +5,7 @@ import paramiko
 import io
 import base64
 import logging
-import warnings
+import os
 
 class CustomLogger:
     def __init__(self, name, debug=False):
@@ -21,11 +21,12 @@ class CustomLogger:
         return self.logger
 
 class SFTPManager:
-    def __init__(self, host, port, username, encoded_ssh_private_key, debug=False):
+    def __init__(self, host, port, username, encoded_ssh_private_key, timeout=1, debug=False):
         self.host = host
         self.port = port
         self.username = username
         self.encoded_ssh_private_key = encoded_ssh_private_key
+        self.timeout = timeout
         self.debug = debug
 
         # Configure logging
@@ -37,12 +38,9 @@ class SFTPManager:
             ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             decoded_private_key = base64.b64decode(self.encoded_ssh_private_key).decode("utf-8")
             private_key = paramiko.RSAKey.from_private_key(file_obj=io.StringIO(decoded_private_key))
-            try:
-                ssh_client.connect(self.host, port=self.port, username=self.username, pkey=private_key)
-            except:
-                ssh_client.connect(self.host, port=self.port, username=self.username, pkey=private_key, disabled_algorithms={'pubkeys': ['rsa-sha2-256', 'rsa-sha2-512']})
+            ssh_client.connect(self.host, port=self.port, username=self.username, pkey=private_key, timeout=self.timeout)
             if self.debug:
-                self.logger.debug("Connected to %s", self.host)
+                self.logger.debug("%s - Authentication (publickey) successful!", self.host)
             return ssh_client
         except paramiko.AuthenticationException as auth_err:
             self.logger.error("Authentication failed: %s", str(auth_err))
@@ -62,7 +60,7 @@ class SFTPManager:
                 sftp_client.get(remote_file_path, local_file_path)
                 sftp_client.remove(remote_file_path)
                 if self.debug:
-                    self.logger.debug("Downloaded %s -> %s", remote_file_path, local_file_path)
+                    self.logger.debug("%s - Downloaded %s -> %s", self.host, remote_file_path, local_file_path)
             except Exception as e:
                 self.logger.error("An error occurred: %s", str(e))
             finally:
@@ -76,7 +74,7 @@ class SFTPManager:
                 sftp_client = ssh_client.open_sftp()
                 sftp_client.put(local_path, remote_path)
                 if self.debug:
-                    self.logger.debug("Uploaded %s -> %s", local_path, remote_path)
+                    self.logger.debug("%s - Uploaded %s -> %s", self.host, local_path, remote_path)
             except Exception as e:
                 self.logger.error("An error occurred: %s", str(e))
             finally:
