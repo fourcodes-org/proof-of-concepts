@@ -72,7 +72,7 @@ server {
 }
 ```
 
-# create the ssl cerficate directory
+# create the ssl certificate directory
 
 ```console
 mkdir /etc/nginx/ssl-certificate
