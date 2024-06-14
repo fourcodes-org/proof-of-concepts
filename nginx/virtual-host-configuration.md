@@ -2,7 +2,7 @@
 
 `/etc/nginx/sites-available/wazuh.scanslips.in.conf`
 
-```conf
+```console
 server {
 
     # Listen rules
