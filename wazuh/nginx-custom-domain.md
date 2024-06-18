@@ -78,17 +78,22 @@ server {
     return 404;
 }
 ```
+_check config_
+```cmd
+nginx -t
+```
+
+_Restart the NGINX service_
+```cmd
+sudo systemctl restart nginx
+```
 _Restart the Wazuh dashboard and the Wazuh server_
 
 ```cmd
 sudo systemctl restart wazuh-dashboard
 sudo systemctl restart wazuh-manager
 ```
-_Restart the NGINX service_
 
-```cmd
-sudo systemctl restart nginx
-```
 _**Access the Wazuh dashboard via the configured domain name**_
 
 ```url
