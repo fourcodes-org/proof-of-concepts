@@ -1,0 +1,70 @@
+---
+create-release-decision:
+  stage: create-release-decision
+  tags: !reference [.references, uat_tags, tags]
+  variables:
+    GIT_CHECKOUT: "false"
+  script:
+    - echo "The release engineer has made the decision to create the release."
+  when: manual
+  needs:
+    - job: sit-rollout-validation
+      artifacts: false
+
+create-release-approval-email:
+  stage: create-release
+  extends: .rollout-release-email-notification
+  tags: !reference [.references, uat_tags, tags]
+  variables:
+    ENV_NAME: "RELEASE CIS-INFRASTRUCTURE CREATION APPROVAL"
+    SMTP_SERVER: $CIS_UAT_SMTP_SERVER
+    SMTP_USER: $CIS_UAT_SMTP_USER
+    SMTP_PASSWORD: $CIS_UAT_SMTP_PASSWORD
+    SMTP_PORT: $CIS_UAT_SMTP_PORT
+    RECEIVER_EMAILS: $CIS_TO_EMAIL_ADDRESSES
+    CC_EMAILS: $CIS_CC_EMAIL_ADDRESSES
+    APPROVAL_ENV: create-release
+    ACTION: release
+    GITLAB_PAT_TOKEN: $COMMON_PAT_TOKEN
+    ATTACHMENT_PATH: reports.zip
+    JOB_NAME: create-release
+  needs:
+    - job: scan-result-publish
+      artifacts: true
+    - job: create-release-decision
+      artifacts: false
+
+create-release:
+  stage: create-release
+  extends: .create-release
+  environment:
+    name: create-release
+  variables:
+    GITLAB_PAT_TOKEN: $COMMON_PAT_TOKEN
+  tags: !reference [.references, uat_tags, tags]
+  when: manual
+  allow_failure: false
+  needs:
+    - job: create-release-decision
+      artifacts: false
+
+create-release-complete-notification:
+  stage: create-release-notification
+  extends: .rollout-complete-email-notification
+  tags: !reference [.references, uat_tags, tags]
+  variables:
+    ENV_NAME: "RELEASE CIS-INFRASTRUCTURE COMPLETE"
+    SMTP_SERVER: $CIS_UAT_SMTP_SERVER
+    SMTP_USER: $CIS_UAT_SMTP_USER
+    SMTP_PASSWORD: $CIS_UAT_SMTP_PASSWORD
+    SMTP_PORT: $CIS_UAT_SMTP_PORT
+    RECEIVER_EMAILS: $CIS_TO_EMAIL_ADDRESSES
+    CC_EMAILS: $CIS_CC_EMAIL_ADDRESSES
+    APPROVAL_ENV: create-release
+    ACTION: release
+    GITLAB_PAT_TOKEN: $COMMON_PAT_TOKEN
+  needs:
+    - job: create-release
+      artifacts: true
+    - job: create-release-approval-email
+      artifacts: false

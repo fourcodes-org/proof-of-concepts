@@ -1,0 +1,323 @@
+---
+uat-rollout-terraform-validate: 
+  extends: .terraform-proxy-connection
+  stage: uat-rollout-plan
+  variables:
+    DOMAIN_NAME: $UAT_PROXY_SERVER_NAME
+  tags: !reference [.references, uat_tags, tags]
+  script:
+    - terraform init -backend-config="bucket=${UAT_BACKEND_CONFIG_BUCKET}" -backend-config="key=${UAT_BACKEND_CONFIG_TF_STATE_KEY_NAME}" -backend-config="region=${UAT_BACKEND_CONFIG_REGION}" -backend=true
+    - terraform validate
+  needs: 
+    - sit-rollout-validation
+
+uat-rollout-terraform-plan: 
+  extends: .terraform-proxy-connection
+  stage: uat-rollout-plan
+  variables:
+    DOMAIN_NAME: $UAT_PROXY_SERVER_NAME
+  tags: !reference [.references, uat_tags, tags]
+  script:
+    - terraform init -backend-config="bucket=${UAT_BACKEND_CONFIG_BUCKET}" -backend-config="key=${UAT_BACKEND_CONFIG_TF_STATE_KEY_NAME}" -backend-config="region=${UAT_BACKEND_CONFIG_REGION}" -backend=true
+    - terraform plan -var-file=uat.tfvars
+  needs: 
+    - sit-rollout-validation
+
+uat-rollout-proceed-prompt:
+  stage: uat-rollout-proceed-prompt
+  tags: !reference [.references, uat_tags, tags]
+  extends: .confirmation-prompt
+  when: manual
+  allow_failure: false
+  dependencies: []
+  needs:
+    - uat-rollout-terraform-plan
+    - uat-rollout-terraform-validate
+
+uat-rollout-approval-email:
+  stage: uat-rollout-approval
+  extends: .rollout-email-notification
+  tags: !reference [.references, uat_tags, tags]
+  variables:
+    ENV_NAME: "UAT SH-CIS-INFRASTRUCTURE ROLLOUT APPROVAL"
+    SMTP_SERVER: $CIS_UAT_SMTP_SERVER
+    SMTP_USER: $CIS_UAT_SMTP_USER
+    SMTP_PASSWORD: $CIS_UAT_SMTP_PASSWORD
+    SMTP_PORT: $CIS_UAT_SMTP_PORT
+    RECEIVER_EMAILS: $CIS_TO_EMAIL_ADDRESSES
+    CC_EMAILS: $CIS_CC_EMAIL_ADDRESSES
+    APPROVAL_ENV: user-acceptance-testing
+    ACTION: deployment
+    GITLAB_PAT_TOKEN: $COMMON_PAT_TOKEN
+    ATTACHMENT_PATH: reports.zip
+    AWS_DEFAULT_REGION: $DEFAULT_REGION
+    JOB_NAME: uat-rollout-approval
+  before_script:
+    - aws s3 cp reports.zip s3://${ARTIFACT_S3_BUCKET_NAME}/nsign-scan-reports/${CI_PROJECT_NAME}/${CI_PIPELINE_IID}/reports.zip --endpoint-url https://s3.${AWS_DEFAULT_REGION}.amazonaws.com
+  needs:
+    - job: scan-result-publish
+      artifacts: true
+    - job: uat-rollout-proceed-prompt
+      artifacts: false
+
+uat-rollout-approval:
+  tags: !reference [.references, uat_tags, tags]
+  extends: .msg-debug
+  stage: uat-rollout-approval
+  environment:
+    name: user-acceptance-testing
+  variables:
+    MESSAGE: "The user acceptance testing restoration approval granted"
+  dependencies: []
+  needs:
+    - job: uat-rollout-proceed-prompt
+      artifacts: false
+
+uat-rollout: 
+  extends: .terraform-proxy-connection
+  stage: uat-rollout
+  variables:
+    DOMAIN_NAME: $UAT_PROXY_SERVER_NAME
+  tags: !reference [.references, uat_tags, tags]
+  script:
+    - terraform init -backend-config="bucket=${UAT_BACKEND_CONFIG_BUCKET}" -backend-config="key=${UAT_BACKEND_CONFIG_TF_STATE_KEY_NAME}" -backend-config="region=${UAT_BACKEND_CONFIG_REGION}" -backend=true
+    - terraform apply -auto-approve -var-file=uat.tfvars
+  needs:
+    - uat-rollout-approval
+    - uat-rollout-approval-email
+
+uat-rollout-drift-sync: 
+  stage: uat-rollout
+  tags: !reference [.references, uat_tags, tags]
+  variables:
+    AWS_DEFAULT_REGION: $DEFAULT_REGION
+  script:
+    - aws s3 sync . s3://${ARTIFACT_S3_BUCKET_NAME}/drift-source-code/nsign-uat-version/ --delete --endpoint-url https://s3.${AWS_DEFAULT_REGION}.amazonaws.com --exclude ".git/*" --exclude ".gitlab-ci.yml" --exclude ".pipeline/*"
+  needs:
+    - uat-rollout
+
+uat-rollout-nttd-validation:
+  tags: !reference [.references, uat_tags, tags]
+  stage: uat-rollout-nttd-validation
+  extends: .msg-debug
+  variables:
+    MESSAGE: "The NTTD validated the rollout provisions"
+  when: manual
+  allow_failure: false
+  needs:
+    - job: uat-rollout
+      artifacts: false
+    - job: uat-rollout-drift-sync
+      artifacts: false
+
+uat-rollout-validation-notification:
+  stage: uat-rollout-validation-notification
+  extends: .rollout-sign-off-email-notification
+  tags: !reference [.references, uat_tags, tags]
+  variables:
+    ENV_NAME: "UAT SH-CIS-INFRASTRUCTURE ROLLOUT SIGN-OFF"
+    SMTP_SERVER: $CIS_UAT_SMTP_SERVER
+    SMTP_USER: $CIS_UAT_SMTP_USER
+    SMTP_PASSWORD: $CIS_UAT_SMTP_PASSWORD
+    SMTP_PORT: $CIS_UAT_SMTP_PORT
+    RECEIVER_EMAILS: $CIS_TO_EMAIL_ADDRESSES
+    CC_EMAILS: $CIS_CC_EMAIL_ADDRESSES
+    APPROVAL_ENV: user-acceptance-testing
+    ACTION: deployment
+    STATUS: ROLLOUT
+    GITLAB_PAT_TOKEN: $COMMON_PAT_TOKEN
+    JOB_NAME: uat-rollout-bca-validation-prompt
+  needs:
+    - uat-rollout-nttd-validation
+
+uat-rollout-bca-validation-prompt:
+  tags: !reference [.references, uat_tags, tags]
+  stage: uat-rollout-bca-validation-prompt
+  extends: .validation-prompt
+  needs:
+    - uat-rollout-validation-notification
+
+uat-rollout-complete-notification:
+  stage: uat-rollout-complete-notification
+  extends: .rollout-complete-email-notification
+  tags: !reference [.references, uat_tags, tags]
+  variables:
+    ENV_NAME: "UAT SH-CIS-INFRASTRUCTURE ROLLOUT COMPLETE"
+    SMTP_SERVER: $CIS_UAT_SMTP_SERVER
+    SMTP_USER: $CIS_UAT_SMTP_USER
+    SMTP_PASSWORD: $CIS_UAT_SMTP_PASSWORD
+    SMTP_PORT: $CIS_UAT_SMTP_PORT
+    RECEIVER_EMAILS: $CIS_TO_EMAIL_ADDRESSES
+    CC_EMAILS: $CIS_CC_EMAIL_ADDRESSES
+    APPROVAL_ENV: user-acceptance-testing
+    ACTION: deployment
+    GITLAB_PAT_TOKEN: $COMMON_PAT_TOKEN
+  needs:
+    - job: uat-rollout-bca-validation-prompt
+      artifacts: true
+
+
+uat-rollback-decision:
+  stage: uat-rollback-decision
+  extends: .source-code-rollback
+  tags: !reference [.references, uat_tags, tags]
+  variables:
+    GITLAB_PAT_TOKEN: $COMMON_PAT_TOKEN
+  when: manual
+
+uat-rollback-terraform-plan: 
+  extends: .terraform-proxy-connection
+  stage: uat-rollback-plan
+  variables:
+    DOMAIN_NAME: $UAT_PROXY_SERVER_NAME
+  tags: !reference [.references, uat_tags, tags]
+  script:
+    - git fetch --all
+    - git branch -a
+    - git checkout ${ROLLBACK_VERSION}
+    - git status
+    - terraform init -backend-config="bucket=${UAT_BACKEND_CONFIG_BUCKET}" -backend-config="key=${UAT_BACKEND_CONFIG_TF_STATE_KEY_NAME}" -backend-config="region=${UAT_BACKEND_CONFIG_REGION}" -backend=true
+    - terraform plan -var-file=uat.tfvars
+  needs: 
+    - job: uat-rollback-decision
+      artifacts: true
+
+uat-rollback-approval-email:
+  stage: uat-rollback-approval
+  extends: .rollback-email-notification
+  tags: !reference [.references, uat_tags, tags]
+  variables:
+    ENV_NAME: "UAT SH-CIS-INFRASTRUCTURE ROLLBACK APPROVAL"
+    SMTP_SERVER: $CIS_UAT_SMTP_SERVER
+    SMTP_USER: $CIS_UAT_SMTP_USER
+    SMTP_PASSWORD: $CIS_UAT_SMTP_PASSWORD
+    SMTP_PORT: $CIS_UAT_SMTP_PORT
+    RECEIVER_EMAILS: $CIS_TO_EMAIL_ADDRESSES
+    CC_EMAILS: $CIS_CC_EMAIL_ADDRESSES
+    APPROVAL_ENV: user-acceptance-testing-rollback
+    ACTION: rollback
+    JOB_NAME: uat-rollback-approval
+    GITLAB_PAT_TOKEN: $COMMON_PAT_TOKEN
+  needs:
+    - job: uat-rollback-decision
+      artifacts: true
+    - job: uat-rollback-terraform-plan
+      artifacts: false
+
+uat-rollback-approval:
+  tags: !reference [.references, uat_tags, tags]
+  extends: .msg-debug
+  stage: uat-rollback-approval
+  environment:
+    name: user-acceptance-testing-rollback
+  variables:
+    MESSAGE: "The approver approved user-acceptance-testing env rollback deployment"
+  needs:
+    - job: uat-rollback-decision
+      artifacts: true
+    - job: uat-rollback-terraform-plan
+      artifacts: false
+
+uat-rollback: 
+  extends: .terraform-proxy-connection
+  stage: uat-rollback
+  variables:
+    DOMAIN_NAME: $UAT_PROXY_SERVER_NAME
+  tags: !reference [.references, uat_tags, tags]
+  script:
+    - git fetch --all
+    - git branch -a
+    - git checkout ${ROLLBACK_VERSION}
+    - git status
+    - terraform init -backend-config="bucket=${UAT_BACKEND_CONFIG_BUCKET}" -backend-config="key=${UAT_BACKEND_CONFIG_TF_STATE_KEY_NAME}" -backend-config="region=${UAT_BACKEND_CONFIG_REGION}" -backend=true
+    - terraform apply -auto-approve -var-file=uat.tfvars
+  needs:
+    - job: uat-rollback-approval
+      artifacts: false
+    - job: uat-rollback-approval-email
+      artifacts: false
+    - job: uat-rollback-decision
+      artifacts: true
+      
+uat-rollback-drift-sync: 
+  stage: uat-rollback
+  tags: !reference [.references, uat_tags, tags]
+  variables:
+    AWS_DEFAULT_REGION: $DEFAULT_REGION
+  script:
+    - git fetch --all
+    - git branch -a
+    - git checkout ${ROLLBACK_VERSION}
+    - git status
+    - aws s3 sync . s3://${ARTIFACT_S3_BUCKET_NAME}/drift-source-code/nsign-uat-version/ --delete --endpoint-url https://s3.${AWS_DEFAULT_REGION}.amazonaws.com --exclude ".git/*" --exclude ".gitlab-ci.yml" --exclude ".pipeline/*"
+  needs:
+    - job: uat-rollback
+      artifacts: false
+    - job: uat-rollback-decision
+      artifacts: true
+  
+uat-rollback-nttd-validation:
+  tags: !reference [.references, uat_tags, tags]
+  stage: uat-rollback-nttd-validation
+  extends: .msg-debug
+  variables:
+    MESSAGE: "The NTTD validated the rollback provisions"
+  when: manual
+  allow_failure: false
+  needs:
+    - job: uat-rollback
+      artifacts: false
+    - job: uat-rollback-drift-sync
+      artifacts: false
+    - job: uat-rollback-decision
+      artifacts: true
+  dependencies: []
+
+uat-rollback-validation-notification:
+  stage: uat-rollback-validation-notification
+  extends: .rollback-sign-off-email-notification
+  tags: !reference [.references, uat_tags, tags]
+  variables:
+    ENV_NAME: "UAT SH-CIS-INFRASTRUCTURE ROLLBACK SIGN-OFF"
+    SMTP_SERVER: $CIS_UAT_SMTP_SERVER
+    SMTP_USER: $CIS_UAT_SMTP_USER
+    SMTP_PASSWORD: $CIS_UAT_SMTP_PASSWORD
+    SMTP_PORT: $CIS_UAT_SMTP_PORT
+    RECEIVER_EMAILS: $CIS_TO_EMAIL_ADDRESSES
+    CC_EMAILS: $CIS_CC_EMAIL_ADDRESSES
+    APPROVAL_ENV: user-acceptance-testing-rollback
+    ACTION: rollback
+    STATUS: rollback
+    JOB_NAME: uat-rollback-bca-validation-prompt
+    GITLAB_PAT_TOKEN: $COMMON_PAT_TOKEN
+  needs:
+    - uat-rollback-nttd-validation
+
+uat-rollback-bca-validation-prompt:
+  tags: !reference [.references, uat_tags, tags]
+  stage: uat-rollback-bca-validation-prompt
+  extends: .validation-prompt
+  needs:
+    - uat-rollback-validation-notification
+
+uat-rollback-complete-notification:
+  stage: uat-rollback-complete-notification
+  extends: .email-notification-for-complete
+  tags: !reference [.references, uat_tags, tags]
+  variables:
+    ENV_NAME: "UAT SH-CIS-INFRASTRUCTURE ROLLBACK COMPLETE"
+    SMTP_SERVER: $CIS_UAT_SMTP_SERVER
+    SMTP_USER: $CIS_UAT_SMTP_USER
+    SMTP_PASSWORD: $CIS_UAT_SMTP_PASSWORD
+    SMTP_PORT: $CIS_UAT_SMTP_PORT
+    RECEIVER_EMAILS: $CIS_TO_EMAIL_ADDRESSES
+    CC_EMAILS: $CIS_CC_EMAIL_ADDRESSES
+    APPROVAL_ENV: user-acceptance-testing-rollback
+    ACTION: rollback
+    STATUS: rollback
+    GITLAB_PAT_TOKEN: $COMMON_PAT_TOKEN
+  needs:
+    - job: uat-rollback-bca-validation-prompt
+      artifacts: true
+    - job: uat-rollback-decision
+      artifacts: true

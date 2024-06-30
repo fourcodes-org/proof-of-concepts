@@ -1,0 +1,102 @@
+---
+include:
+  - template: Security/Secret-Detection.gitlab-ci.yml
+  - template: Security/SAST-IaC.gitlab-ci.yml
+
+release-details-artefact:
+  stage: scans
+  tags: !reference [.references, uat_tags, tags]
+  script:
+    - echo "Preparation of release notes artifacts"
+  artifacts:
+    paths:
+      - RELEASE_NOTES.txt
+
+secret_detection:
+  stage: scans
+  variables:
+    SECRET_DETECTION_HISTORIC_SCAN: "false"
+  artifacts:
+    paths:
+      - gl-secret-detection-report.json
+
+checkov-sast-scan:
+  extends: .checkov-scan
+  stage: scans
+  variables:
+    WORKING_DIR: "."
+    CHECKOV_IDS: "CKV_AWS_3,CKV_AWS_7,CKV_AWS_17,CKV_AWS_19,CKV_AWS_24,CKV_AWS_36,CKV_AWS_37,CKV_AWS_39,CKV_AWS_42,CKV_AWS_43,CKV_AWS_47,CKV_AWS_49,CKV_AWS_53,CKV_AWS_54,CKV_AWS_62,CKV_AWS_64,CKV_AWS_70,CKV_AWS_71,CKV_AWS_76,CKV_AWS_81,CKV_AWS_87,CKV_AWS_89,CKV_AWS_92,CKV_AWS_103,CKV_AWS_105,CKV_AWS_106,CKV_AWS_117,CKV_AWS_123,CKV_AWS_127,CKV_AWS_130,CKV_AWS_131,CKV_AWS_137,CKV_AWS_139,CKV_AWS_141,CKV_AWS_146,CKV_AWS_155,CKV_AWS_156,CKV_AWS_159,CKV_AWS_168,CKV_AWS_176,CKV_AWS_207,CKV_AWS_226,CKV_AWS_231,CKV_AWS_232,CKV_AWS_234,CKV_AWS_277,CKV2_AWS_8,CKV2_AWS_10,CKV2_AWS_11,CKV2_AWS_12,CKV2_AWS_15,CKV2_AWS_18,CKV2_AWS_20,CKV2_AWS_29,CKV_AZURE_15,CKV_AZURE_28,CKV_AZURE_29,CKV_AZURE_31,CKV_AZURE_44,CKV_AZURE_48,CKV_AZURE_53,CKV_AZURE_58,CKV_AZURE_60,CKV_AZURE_68,CKV_AZURE_70,CKV_AZURE_72,CKV_AZURE_78,CKV_AZURE_89,CKV_AZURE_98,CKV_AZURE_101,CKV_AZURE_104,CKV_AZURE_106,CKV_AZURE_107,CKV_AZURE_120,CKV_AZURE_121,CKV_AZURE_124,CKV_AZURE_125,CKV2_AZURE_12,CKV2_AZURE_19"
+  artifacts:
+    paths:
+      - "checkov_results.xml"
+    expire_in: 1 week
+
+generate-maturity-report:
+  variables:
+    PROJECT_TOKEN: $CIS_COMMON_PAT_TOKEN
+    PROJECT_ID: $CI_PROJECT_ID
+  stage: scans
+  extends: .generate-maturity-report
+  artifacts:
+    paths:
+      - out
+    expire_in: 1 day
+
+iac-sast:
+  tags:
+    - ship_docker
+  variables:
+    SAST_ANALYZER_IMAGE_TAG: "3.1"
+  stage: scans
+  artifacts:
+    paths:
+      - gl-sast-report.json
+
+secret-detection-quality-control:
+  stage: quality-gate-validation
+  extends: .gitlab-secret-detection-vulnerabilities-quality-gate
+  tags: !reference [.references, uat_tags, tags]
+  variables:
+    FILE_NAME: ${CIS_GITLAB_SECRET_SCAN_RESULT_FILE_NAME}
+    GITLAB_SECRET_SCAN_QUALITY_CONTROL: ${CIS_GITLAB_SECRET_SCAN_QUALITY_CONTROL}
+    GITLAB_SECRET_SCAN_FALSE_POSITIVE_CASES_ID_FILE_NAME: ${CIS_APPROVED_GITLAB_SECRET_SCAN_FALSE_POSITIVE_CASES_ID_FILE_NAME}
+  needs:
+    - job: secret_detection
+      artifacts: true
+    - job: checkov-sast-scan
+      artifacts: false
+
+gitlab-iac-sast-quality-control:
+  stage: quality-gate-validation
+  extends: .gitlab-iac-sast-vulnerabilities-quality-gate
+  tags: !reference [.references, uat_tags, tags]
+  variables:
+    FILE_NAME: ${CIS_GITLAB_IAC_SCAN_RESULT_FILE_NAME}
+    GITLAB_IAC_SAST_SCAN_QUALITY_CONTROL: ${CIS_GITLAB_IAC_SAST_SCAN_QUALITY_CONTROL}
+    GITLAB_IAC_SAST_SCAN_FALSE_POSITIVE_CASES_ID_FILE_NAME: ${CIS_APPROVED_GITLAB_IAC_SAST_SCAN_FALSE_POSITIVE_CASES_ID_FILE_NAME}
+  needs:
+    - job: kics-iac-sast
+      artifacts: true
+    - job: checkov-sast-scan
+      artifacts: false
+
+scan-result-publish:
+  tags: !reference [.references, uat_tags, tags]
+  stage: scan-result-publish
+  extends: .scan-result-publish
+  before_script:
+  - mkdir reports
+  - mv checkov_results.xml reports/checkov-results.xml
+  needs:
+  - job: secret-detection-quality-control
+    artifacts: false
+  - job: gitlab-iac-sast-quality-control
+    artifacts: false
+  - job: secret_detection
+    artifacts: true
+  - job: kics-iac-sast
+    artifacts: true
+  - job: checkov-sast-scan
+    artifacts: true
+  - job: release-details-artefact
+    artifacts: true

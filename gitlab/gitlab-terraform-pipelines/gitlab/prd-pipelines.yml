@@ -1,0 +1,389 @@
+---
+prd-rollout-terraform-plan: 
+  extends: .terraform-proxy-connection
+  stage: prd-rollout-plan
+  variables:
+    DOMAIN_NAME: $PRD_PROXY_SERVER_NAME
+  tags: !reference [.references, prd_tags, tags]
+  script:
+    - terraform init -backend-config="bucket=${PRD_BACKEND_CONFIG_BUCKET}" -backend-config="key=${PRD_BACKEND_CONFIG_TF_STATE_KEY_NAME}" -backend-config="region=${PRD_BACKEND_CONFIG_REGION}" -backend=true
+    - terraform plan -var-file=prd.tfvars
+  needs: 
+    - uat-rollout-complete-notification
+
+prd-rollout-terraform-validate: 
+  extends: .terraform-proxy-connection
+  stage: prd-rollout-plan
+  variables:
+    DOMAIN_NAME: $PRD_PROXY_SERVER_NAME
+  tags: !reference [.references, prd_tags, tags]
+  script:
+    - terraform init -backend-config="bucket=${PRD_BACKEND_CONFIG_BUCKET}" -backend-config="key=${PRD_BACKEND_CONFIG_TF_STATE_KEY_NAME}" -backend-config="region=${PRD_BACKEND_CONFIG_REGION}" -backend=true
+    - terraform plan -var-file=prd.tfvars
+  needs: 
+    - uat-rollout-complete-notification
+
+prd-rollout-proceed-prompt:
+  stage: prd-rollout-proceed-prompt
+  tags: !reference [.references, prd_tags, tags]
+  extends: .confirmation-prompt
+  when: manual
+  allow_failure: false
+  dependencies: []
+  needs:
+    - prd-rollout-terraform-validate
+    - prd-rollout-terraform-plan
+
+prd-rollout-approval-email:
+  stage: prd-rollout-approval
+  extends: .rollout-email-notification
+  tags: !reference [.references, prd_tags, tags]
+  variables:
+    ENV_NAME: "PRD SH-CIS-INFRASTRUCTURE ROLLOUT APPRPVAL"
+    SMTP_SERVER: $CIS_UAT_SMTP_SERVER
+    SMTP_USER: $CIS_UAT_SMTP_USER
+    SMTP_PASSWORD: $CIS_UAT_SMTP_PASSWORD
+    SMTP_PORT: $CIS_UAT_SMTP_PORT
+    RECEIVER_EMAILS: $CIS_TO_EMAIL_ADDRESSES
+    CC_EMAILS: $CIS_CC_EMAIL_ADDRESSES
+    APPROVAL_ENV: production
+    VERSION: $CI_COMMIT_BRANCH
+    ACTION: deployment
+    GITLAB_PAT_TOKEN: $COMMON_PAT_TOKEN
+    JOB_NAME: prd-rollout-approval
+    ATTACHMENT_PATH: reports.zip
+    AWS_DEFAULT_REGION: $DEFAULT_REGION
+  needs:
+    - job: scan-result-publish
+      artifacts: true
+    - job: prd-rollout-proceed-prompt
+      artifacts: false
+
+prd-rollout-approval:
+  tags: !reference [.references, prd_tags, tags]
+  extends: .msg-debug
+  stage: prd-rollout-approval
+  environment:
+    name: production
+  variables:
+    MESSAGE: "The production deployment approval granted"
+  dependencies: []
+  needs:
+    - job: prd-rollout-proceed-prompt
+      artifacts: false
+      
+prd-rollout: 
+  extends: .terraform-proxy-connection
+  stage: prd-rollout
+  variables:
+    DOMAIN_NAME: $PRD_PROXY_SERVER_NAME
+  tags: !reference [.references, prd_tags, tags]
+  script:
+    - terraform init -backend-config="bucket=${PRD_BACKEND_CONFIG_BUCKET}" -backend-config="key=${PRD_BACKEND_CONFIG_TF_STATE_KEY_NAME}" -backend-config="region=${PRD_BACKEND_CONFIG_REGION}" -backend=true
+    - terraform apply -auto-approve -var-file=prd.tfvars
+  needs:
+    - prd-rollout-approval
+    - prd-rollout-approval-email
+
+prd-rollout-drift-sync: 
+  stage: prd-rollout
+  tags: !reference [.references, prd_tags, tags]
+  variables:
+    AWS_DEFAULT_REGION: $DEFAULT_REGION
+  script:
+    - aws s3 sync . s3://${ARTIFACT_S3_BUCKET_NAME}/drift-source-code/nsign-prd-version/ --delete --endpoint-url https://s3.${AWS_DEFAULT_REGION}.amazonaws.com --exclude ".git/*" --exclude ".gitlab-ci.yml" --exclude ".pipeline/*"
+  needs:
+    - prd-rollout
+
+prd-rollout-nttd-validation:
+  tags: !reference [.references, prd_tags, tags]
+  stage: prd-rollout-nttd-validation
+  extends: .msg-debug
+  variables:
+    MESSAGE: "The NTTD validated the production rollout provisions"
+  when: manual
+  allow_failure: false
+  needs:
+    - job: prd-rollout
+      artifacts: false
+    - job: prd-rollout-drift-sync
+      artifacts: false
+
+prd-rollout-validation-notification:
+  stage: prd-rollout-validation-notification
+  extends: .rollout-sign-off-email-notification
+  tags: !reference [.references, prd_tags, tags]
+  variables:
+    ENV_NAME: "PRD SH-CIS-INFRASTRUCTURE ROLLOUT SIGN-OFF"
+    SMTP_SERVER: $CIS_UAT_SMTP_SERVER
+    SMTP_USER: $CIS_UAT_SMTP_USER
+    SMTP_PASSWORD: $CIS_UAT_SMTP_PASSWORD
+    SMTP_PORT: $CIS_UAT_SMTP_PORT
+    RECEIVER_EMAILS: $CIS_TO_EMAIL_ADDRESSES
+    CC_EMAILS: $CIS_CC_EMAIL_ADDRESSES
+    APPROVAL_ENV: production
+    ACTION: deployment
+    STATUS: ROLLOUT
+    ACTION: deployment
+    GITLAB_PAT_TOKEN: $COMMON_PAT_TOKEN
+    JOB_NAME: prd-rollout-bca-validation-prompt
+  needs:
+    - prd-rollout-nttd-validation
+
+prd-rollout-bca-validation-prompt:
+  tags: !reference [.references, prd_tags, tags]
+  stage: prd-rollout-bca-validation-prompt
+  extends: .validation-prompt
+  needs:
+    - prd-rollout-validation-notification
+
+prd-rollout-main-merge-request:
+  extends: .merge-request-create-and-merge
+  stage: prd-rollout-merge-request
+  tags: !reference [.references, prd_tags, tags]
+  variables:
+    SOURCE_BRANCH: ${CI_COMMIT_BRANCH}
+    TARGET_BRANCH: main
+    APPROVER_GITLAB_PAT_TOKEN: $COMMON_APPROVER_TOKEN
+    GITLAB_PAT_TOKEN: $COMMON_PAT_TOKEN
+  needs:
+    - job: prd-rollout-bca-validation-prompt
+      artifacts: true
+
+prd-rollout-develop-merge-request:
+  extends: .merge-request-create-and-merge
+  stage: prd-rollout-merge-request
+  tags: !reference [.references, prd_tags, tags]
+  variables:
+    SOURCE_BRANCH: ${CI_COMMIT_BRANCH}
+    TARGET_BRANCH: develop
+    APPROVER_GITLAB_PAT_TOKEN: $COMMON_APPROVER_TOKEN
+    GITLAB_PAT_TOKEN: $COMMON_PAT_TOKEN
+  needs:
+    - job: prd-rollout-bca-validation-prompt
+      artifacts: true
+    - job: prd-rollout-main-merge-request
+      artifacts: false
+
+prd-rollout-tagging:
+  stage: prd-rollout-tagging
+  extends: .create-tag
+  tags: !reference [.references, prd_tags, tags]
+  variables:
+    SOURCE_BRANCH: main
+    TAG_PREFIX: RELEASE
+    GITLAB_PAT_TOKEN: $COMMON_PAT_TOKEN
+  needs:
+    - job: prd-rollout-bca-validation-prompt
+      artifacts: true
+    - job: prd-rollout-main-merge-request
+      artifacts: false
+    - job: prd-rollout-develop-merge-request
+      artifacts: false
+
+prd-rollout-complete-notification:
+  stage: prd-rollout-complete-notification
+  extends: .rollout-complete-email-notification
+  tags: !reference [.references, prd_tags, tags]
+  variables:
+    ENV_NAME: "PRD SH-CIS-INFRASTRUCTURE ROLLOUT COMPLETE"
+    SMTP_SERVER: $CIS_UAT_SMTP_SERVER
+    SMTP_USER: $CIS_UAT_SMTP_USER
+    SMTP_PASSWORD: $CIS_UAT_SMTP_PASSWORD
+    SMTP_PORT: $CIS_UAT_SMTP_PORT
+    RECEIVER_EMAILS: $CIS_TO_EMAIL_ADDRESSES
+    CC_EMAILS: $CIS_CC_EMAIL_ADDRESSES
+    APPROVAL_ENV: production
+    ACTION: deployment
+    ACTION: deployment
+    GITLAB_PAT_TOKEN: $COMMON_PAT_TOKEN
+  needs:
+    - job: prd-rollout-bca-validation-prompt
+      artifacts: true
+    - job: prd-rollout-tagging
+      artifacts: false
+
+
+
+
+prd-rollback-decision:
+  tags: !reference [.references, prd_tags, tags]
+  stage: prd-rollback-decision
+  extends: .source-code-rollback
+  variables:
+    GITLAB_PAT_TOKEN: $COMMON_PAT_TOKEN
+  when: manual
+
+prd-rollback-terraform-plan: 
+  extends: .terraform-proxy-connection
+  stage: prd-rollback-plan
+  variables:
+    DOMAIN_NAME: $PRD_PROXY_SERVER_NAME
+  tags: !reference [.references, prd_tags, tags]
+  script:
+    - git fetch --all
+    - git branch -a
+    - git checkout ${ROLLBACK_VERSION}
+    - git status
+    - terraform init -backend-config="bucket=${PRD_BACKEND_CONFIG_BUCKET}" -backend-config="key=${PRD_BACKEND_CONFIG_TF_STATE_KEY_NAME}" -backend-config="region=${PRD_BACKEND_CONFIG_REGION}" -backend=true
+    - terraform plan -var-file=prd.tfvars
+  needs: 
+    - job: prd-rollback-decision
+      artifacts: true
+
+prd-rollback-approval-email:
+  stage: prd-rollback-approval
+  extends: .rollback-email-notification
+  tags: !reference [.references, prd_tags, tags]
+  variables:
+    ENV_NAME: "PRD SH-CIS-INFRASTRUCTURE ROLLBACK APPROVAL"
+    SMTP_SERVER: $CIS_UAT_SMTP_SERVER
+    SMTP_USER: $CIS_UAT_SMTP_USER
+    SMTP_PASSWORD: $CIS_UAT_SMTP_PASSWORD
+    SMTP_PORT: $CIS_UAT_SMTP_PORT
+    RECEIVER_EMAILS: $CIS_TO_EMAIL_ADDRESSES
+    CC_EMAILS: $CIS_CC_EMAIL_ADDRESSES
+    APPROVAL_ENV: prodution-rollback
+    APPROVAL_ENV: production-rollback
+    VERSION: $ROLLBACK_VERSION
+    ACTION: rollback
+    JOB_NAME: prd-rollback-approval
+    GITLAB_PAT_TOKEN: $COMMON_PAT_TOKEN
+  needs:
+    - job: prd-rollback-decision
+      artifacts: true
+    - job: prd-rollback-terraform-plan
+      artifacts: false
+
+prd-rollback-approval:
+  tags: !reference [.references, prd_tags, tags]
+  extends: .msg-debug
+  stage: prd-rollback-approval
+  environment:
+    name: production-rollback
+  variables:
+    MESSAGE: "The approver approved production rollback rollback deployment"
+  needs:
+    - job: prd-rollback-decision
+      artifacts: false
+  dependencies: []
+
+prd-rollback: 
+  extends: .terraform-proxy-connection
+  stage: prd-rollback
+  variables:
+    DOMAIN_NAME: $PRD_PROXY_SERVER_NAME
+  tags: !reference [.references, prd_tags, tags]
+  script:
+    - git fetch --all
+    - git branch -a
+    - git checkout ${ROLLBACK_VERSION}
+    - git status
+    - terraform init -backend-config="bucket=${PRD_BACKEND_CONFIG_BUCKET}" -backend-config="key=${PRD_BACKEND_CONFIG_TF_STATE_KEY_NAME}" -backend-config="region=${PRD_BACKEND_CONFIG_REGION}" -backend=true
+    - terraform apply -auto-approve -var-file=prd.tfvars
+  needs:
+    - job: prd-rollback-approval
+      artifacts: false
+    - job: prd-rollback-approval-email
+      artifacts: false
+    - job: prd-rollback-decision
+      artifacts: true
+
+prd-rollback-drift-sync: 
+  stage: prd-rollback
+  tags: !reference [.references, prd_tags, tags]
+  variables:
+    AWS_DEFAULT_REGION: $DEFAULT_REGION
+  script:
+    - git fetch --all
+    - git branch -a
+    - git checkout ${ROLLBACK_VERSION}
+    - git status
+    - aws s3 sync . s3://${ARTIFACT_S3_BUCKET_NAME}/drift-source-code/nsign-prd-version/ --delete --endpoint-url https://s3.${AWS_DEFAULT_REGION}.amazonaws.com --exclude ".git/*" --exclude ".gitlab-ci.yml" --exclude ".pipeline/*"
+  needs:
+    - job: prd-rollback
+      artifacts: false
+    - job: prd-rollback-decision
+      artifacts: true
+   
+prd-rollback-nttd-validation:
+  tags:
+    - prd-bca-CIS-linux-gitlab-remote-runner
+  stage: prd-rollback-nttd-validation
+  extends: .msg-debug
+  variables:
+    MESSAGE: "The NTTD validated the production rollback provisions"
+  when: manual
+  allow_failure: false
+  needs:
+    - job: prd-rollback
+      artifacts: false
+    - job: prd-rollback-drift-sync
+      artifacts: false
+    - job: prd-rollback-decision
+      artifacts: true
+  dependencies: []
+
+prd-rollback-validation-notification:
+  stage: prd-rollback-validation-notification
+  extends: .rollback-sign-off-email-notification
+  tags: !reference [.references, prd_tags, tags]
+  variables:
+    ENV_NAME: "PRD SH-CIS-INFRASTRUCTURE ROLLBACK SIGN-OFF"
+    SMTP_SERVER: $CIS_UAT_SMTP_SERVER
+    SMTP_USER: $CIS_UAT_SMTP_USER
+    SMTP_PASSWORD: $CIS_UAT_SMTP_PASSWORD
+    SMTP_PORT: $CIS_UAT_SMTP_PORT
+    RECEIVER_EMAILS: $CIS_TO_EMAIL_ADDRESSES
+    CC_EMAILS: $CIS_CC_EMAIL_ADDRESSES
+    APPROVAL_ENV: production
+    ACTION: rollback
+    STATUS: rollback
+    JOB_NAME: prd-rollback-bca-validation-prompt
+    GITLAB_PAT_TOKEN: $COMMON_PAT_TOKEN
+  needs:
+    - prd-rollback-nttd-validation
+
+prd-rollback-bca-validation-prompt:
+  tags: !reference [.references, prd_tags, tags]
+  stage: prd-rollback-bca-validation-prompt
+  extends: .validation-prompt
+  needs:
+    - prd-rollback-validation-notification
+
+prd-rollback-tagging:
+  stage: prd-rollback-tagging
+  extends: .rollback-create-tag
+  tags: !reference [.references, prd_tags, tags]
+  variables:
+    GITLAB_PAT_TOKEN: $COMMON_PAT_TOKEN
+    TAG_PREFIX: ROLLBACK
+  needs:
+    - job: prd-rollback-bca-validation-prompt
+      artifacts: true
+    - job: prd-rollback-decision
+      artifacts: true
+
+prd-rollback-complete-notification:
+  stage: prd-rollback-complete-notification
+  extends: .email-notification-for-complete
+  tags: !reference [.references, prd_tags, tags]
+  variables:
+    ENV_NAME: "PRD SH-CIS-INFRASTRUCTURE ROLLBACK COMPLETE"
+    SMTP_SERVER: $CIS_UAT_SMTP_SERVER
+    SMTP_USER: $CIS_UAT_SMTP_USER
+    SMTP_PASSWORD: $CIS_UAT_SMTP_PASSWORD
+    SMTP_PORT: $CIS_UAT_SMTP_PORT
+    RECEIVER_EMAILS: $CIS_TO_EMAIL_ADDRESSES
+    CC_EMAILS: $CIS_CC_EMAIL_ADDRESSES
+    APPROVAL_ENV: production-rollback
+    ACTION: rollback
+    STATUS: rollback
+    GITLAB_PAT_TOKEN: $COMMON_PAT_TOKEN
+  needs:
+    - job: prd-rollback-decision
+      artifacts: true
+    - job: prd-rollback-tagging
+      artifacts: false
+    - job: prd-rollback-bca-validation-prompt
+      artifacts: true

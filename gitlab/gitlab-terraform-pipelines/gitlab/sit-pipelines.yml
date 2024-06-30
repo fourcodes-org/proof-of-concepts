@@ -1,0 +1,59 @@
+---
+sit-rollout-terraform-validate: 
+  extends: .terraform-proxy-connection
+  stage: sit-rollout-plan
+  variables:
+    DOMAIN_NAME: $UAT_PROXY_SERVER_NAME
+  tags: !reference [.references, sit_tags, tags]
+  script:
+    - terraform init -backend-config="bucket=${UAT_BACKEND_CONFIG_BUCKET}" -backend-config="key=${UAT_BACKEND_CONFIG_TF_STATE_KEY_NAME}" -backend-config="region=${UAT_BACKEND_CONFIG_REGION}" -backend=true
+    - terraform validate
+  needs: 
+    - scan-result-publish
+
+sit-rollout-terraform-plan: 
+  extends: .terraform-proxy-connection
+  stage: sit-rollout-plan
+  variables:
+    DOMAIN_NAME: $UAT_PROXY_SERVER_NAME
+  tags: !reference [.references, sit_tags, tags]
+  script:
+    - terraform init -backend-config="bucket=${UAT_BACKEND_CONFIG_BUCKET}" -backend-config="key=${UAT_BACKEND_CONFIG_TF_STATE_KEY_NAME}" -backend-config="region=${UAT_BACKEND_CONFIG_REGION}" -backend=true
+    - terraform plan -var-file=uat.tfvars
+  needs: 
+    - scan-result-publish
+
+sit-rollout-proceed-prompt:
+  tags:
+    - uat-bca-CIS-linux-gitlab-remote-runner
+  stage: sit-rollout-proceed-prompt
+  extends: .confirmation-prompt
+  when: manual
+  allow_failure: false
+  dependencies: []
+  needs:
+    - sit-rollout-terraform-plan
+    - sit-rollout-terraform-validate
+
+sit-rollout: 
+  extends: .terraform-proxy-connection
+  stage: sit-rollout
+  variables:
+    DOMAIN_NAME: $UAT_PROXY_SERVER_NAME
+  tags: !reference [.references, sit_tags, tags]
+  script:
+    - terraform init -backend-config="bucket=${UAT_BACKEND_CONFIG_BUCKET}" -backend-config="key=${UAT_BACKEND_CONFIG_TF_STATE_KEY_NAME}" -backend-config="region=${UAT_BACKEND_CONFIG_REGION}" -backend=true
+    - terraform plan -var-file=uat.tfvars
+  needs:
+    - sit-rollout-proceed-prompt
+
+sit-rollout-validation:
+  stage: sit-rollout-validation
+  tags: !reference [.references, sit_tags, tags]
+  script:
+    - echo "Infra validation has been completed"
+  when: manual
+  allow_failure: false
+  dependencies: []
+  needs:
+    - sit-rollout

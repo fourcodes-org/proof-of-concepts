@@ -1,0 +1,193 @@
+[kics]
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "1e434b25-8763-4b00-a5ca-ca03b7abbb66"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "e38a8e0a-b88b-4902-b3fe-b0fcb17d5c10"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "e592a0c5-5bdb-414c-9066-5dba7cdea370"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "59312e8a-a64e-41e7-a252-618533dd1ea8"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "2a153952-2544-4687-bcc9-cc8fea814a9b"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "59312e8a-a64e-41e7-a252-618533dd1ea8"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "fc5109bf-01fd-49fb-8bde-4492b543c34a"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "08bd0760-8752-44e1-9779-7bb369b2b4e4"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "5a2486aa-facf-477d-a5c1-b010789459ce"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "9f4a9409-9c60-4671-be96-9716dbf63db1"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "c5b31ab9-0f26-4a49-b8aa-4cc064392f4d"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "0afa6ab8-a047-48cf-be07-93a2f8c34cf7"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "568a4d22-3517-44a6-a7ad-6a7eed88722c"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "6e8849c1-3aa7-40e3-9063-b85ee300f29f"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "741f1291-47ac-4a85-a07b-3d32a9d6bd3e"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "7dbba512-e244-42dc-98bb-422339827967"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "8e94dced-9bcc-4203-8eb7-7e41202b2505"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "a31a5a29-718a-4ff4-8001-a69e5e4d029e"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "b4378389-a9aa-44ee-91e7-ef183f11079e"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "ce089fd4-1406-47bd-8aad-c259772bb294"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "ef0b316a-211e-42f1-888e-64efe172b755"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "f861041c-8c9f-4156-acfc-5e6e524f5884"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "084c6686-2a70-4710-91b1-000393e54c12"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "23b70e32-032e-4fa6-ba5c-82f56b9980e6"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "0e32d561-4b5a-4664-a6e3-a3fa85649157"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "4849211b-ac39-479e-ae78-5694d506cb24"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "60224630-175a-472a-9e23-133827040766"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "69e7c320-b65d-41bb-be02-d63ecc0bcc9d"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "75ec6890-83af-4bf1-9f16-e83726df0bd0"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "8d7f7b8c-6c7c-40f8-baa6-62006c6c7b56"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "97cb0688-369a-4d26-b1f7-86c4c91231bc"
+
+  [[kics.ruleset]]
+    disable = true
+    [kics.ruleset.identifier]
+      type = "kics_id"
+      value = "ba48df05-eaa1-4d64-905e-4a4b051e7587"

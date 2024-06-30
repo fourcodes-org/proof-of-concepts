@@ -1,0 +1,133 @@
+---
+include:
+  # - project: wog/bca/cnx-portal/bca-cx-common/sh-bca-common-templates
+  #   ref: develop
+  #   file: 
+  #     - /templates/common-templates.yml
+
+  # SCAN PIPELINE
+  - local: gitlab/scan-pipelines.yml
+    rules:
+    - if: $CI_COMMIT_BRANCH =~ /^(release|hotfix|develop|feature)/
+
+  # SIT PIPELINE INVOKE (NTTD ACCOUNT)
+  - local: gitlab/sit-pipelines.yml
+    rules:
+    - if: $CI_COMMIT_BRANCH =~ /^(develop|feature|release|hotfix)/
+
+  # RELEASE CREATE PIPELINE
+  - local: gitlab/create-release.yml
+    rules:
+    - if: $CI_COMMIT_BRANCH =~ /^(develop)/
+
+  # UAT PIPELINE INVOKE (GCC ACCOUNT)
+  - local: gitlab/uat-pipelines.yml
+    rules:
+    - if: $CI_COMMIT_BRANCH =~ /^(release|hotfix)/
+
+  # PRD PIPELINE INVOKE (GCC ACCOUNT)
+  - local: gitlab/prd-pipelines.yml
+    rules:
+    - if: $CI_COMMIT_BRANCH =~ /^(release|hotfix)/
+
+stages:
+  - scans
+  - quality-gate-validation
+  - scan-result-publish
+
+  - sit-rollout-plan
+  - sit-rollout-proceed-prompt
+  - sit-rollout
+  - sit-rollout-validation
+  
+  - create-release-decision
+  - create-release
+  - create-release-notification
+
+  - uat-rollout-plan
+  - uat-rollout-proceed-prompt
+  - uat-rollout-approval
+  - uat-rollout
+  - uat-rollout-nttd-validation
+  - uat-rollout-validation-notification
+  - uat-rollout-bca-validation-prompt
+  - uat-rollout-complete-notification
+
+  - uat-rollback-decision
+  - uat-rollback-plan
+  - uat-rollback-approval
+  - uat-rollback
+  - uat-rollback-nttd-validation
+  - uat-rollback-validation-notification
+  - uat-rollback-bca-validation-prompt
+  - uat-rollback-complete-notification
+
+  - prd-rollout-plan
+  - prd-rollout-proceed-prompt
+  - prd-rollout-approval
+  - prd-rollout
+  - prd-rollout-nttd-validation
+  - prd-rollout-validation-notification
+  - prd-rollout-bca-validation-prompt
+  - prd-rollout-merge-request
+  - prd-rollout-tagging
+  - prd-rollout-complete-notification
+
+  - prd-rollback-decision
+  - prd-rollback-plan
+  - prd-rollback-approval
+  - prd-rollback
+  - prd-rollback-nttd-validation
+  - prd-rollback-validation-notification
+  - prd-rollback-bca-validation-prompt
+  - prd-rollback-tagging
+  - prd-rollback-complete-notification
+
+
+.references:
+  sit_tags:
+    tags:
+      - sit-cis-linux-gitlab-remote-runner
+  sat_tags:
+    tags:
+      - uat-cis-linux-gitlab-remote-runner
+  prd_tags:
+    tags:
+      - prd-cis-linux-gitlab-remote-runner
+
+variables:
+
+  DEFAULT_REGION: ap-southeast-1
+
+  # quality gate details
+  CIS_GITLAB_SECRET_SCAN_QUALITY_CONTROL: "true"
+  CIS_GITLAB_SECRET_SCAN_RESULT_FILE_NAME: "gl-secret-detection-report.json"
+  CIS_APPROVED_GITLAB_SECRET_SCAN_FALSE_POSITIVE_CASES_ID_FILE_NAME: "whitelists/gitlab-secrets-scan-whitelist.txt"
+
+  CIS_GITLAB_IAC_SAST_SCAN_QUALITY_CONTROL: "true"
+  CIS_GITLAB_IAC_SCAN_RESULT_FILE_NAME: "gl-sast-report.json"
+  CIS_APPROVED_GITLAB_IAC_SAST_SCAN_FALSE_POSITIVE_CASES_ID_FILE_NAME: "whitelists/gitlab-iac-sast-whitelist.txt"
+  
+  # token information
+  COMMON_PAT_TOKEN: $CIS_COMMON_PAT_TOKEN
+  COMMON_APPROVER_TOKEN: $CIS_COMMON_APPROVER_TOKEN
+
+  # Artifacts s3 name
+  ARTIFACT_S3_BUCKET_NAME: sst-s3-bca-nsign-devops-artifacts
+
+  # BACKEND S3
+  SIT_BACKEND_CONFIG_REGION: "$DEFAULT_REGION"
+  SIT_BACKEND_CONFIG_BUCKET: "sst-s3-bca-cis-sit-terraform-state-store"
+  SIT_BACKEND_CONFIG_TF_STATE_KEY_NAME: "sit-environment/tf.tfstate"
+
+  UAT_BACKEND_CONFIG_REGION: "$DEFAULT_REGION"
+  UAT_BACKEND_CONFIG_BUCKET: "sst-s3-bca-cis-uat-terraform-state-store"
+  UAT_BACKEND_CONFIG_TF_STATE_KEY_NAME: "uat-environment/tf.tfstate"
+
+  PRD_BACKEND_CONFIG_REGION: "$DEFAULT_REGION"
+  PRD_BACKEND_CONFIG_BUCKET: "sst-s3-bca-cis-prd-terraform-state-store"
+  PRD_BACKEND_CONFIG_TF_STATE_KEY_NAME: "prd-environment/tf.tfstate"
+
+  # opt vars
+  DEPLOYMENT_CONFIRMATION: "YES"
+  BCA_VALIDATION_STATUS: "SUCCESS"
