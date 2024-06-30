@@ -1,0 +1,21 @@
+Release Notes - 1.14.0
+
+Release Date: 25.02.2024
+
+New Features:
+    - To update the README file, address how to manage the approval process for enhancements and their deployment.
+
+Enhancements:
+    - To update the README file.
+
+Bug Fixes:
+    - No Bug Fixes.
+
+Performance Improvements:
+    -
+
+Known Issues:
+    -
+
+Other Changes:
+    -
